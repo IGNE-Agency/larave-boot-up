@@ -68,12 +68,12 @@ final class ExternalCommand
     {
         $this->process = new Process($this->command, base_path(), null, null, $this->timeout);
         $this->process->run(function ($type, $buffer) {
-            if (! $this->isSilent) {
+            if (!$this->isSilent) {
                 $this->output->write($buffer);
             }
         });
 
-        if (! $this->isSilent && ! $this->process->isSuccessful()) {
+        if (!$this->isSilent && !$this->process->isSuccessful()) {
             throw new ProcessFailedException($this->process);
         }
 
@@ -87,7 +87,7 @@ final class ExternalCommand
 
     public function output(): ?string
     {
-        if (! $this->process) {
+        if (!$this->process) {
             return null;
         }
 
@@ -101,6 +101,18 @@ final class ExternalCommand
         return $this->process?->isSuccessful() ?? false;
     }
 
+    public function resolveCommand(string|array $command, array $options = []): array
+    {
+        return collect($command)
+            ->pipe(fn($input) => $this->normalizeCommand($input))
+            ->pipe(fn($commands) => $this->replaceCommands($commands))
+            ->pipe(fn($commands) => $this->prefixCommands($commands))
+            ->pipe(fn($commands) => $commands->merge($this->buildOptions($options)))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
     protected function prepare(string|array $command, array $options = []): static
     {
         $this->command = $this->resolveCommand($command, $options);
@@ -108,24 +120,12 @@ final class ExternalCommand
         return $this;
     }
 
-    protected function resolveCommand(string|array $command, array $options = []): array
-    {
-        return collect($command)
-            ->pipe(fn ($input) => $this->normalizeCommand($input))
-            ->pipe(fn ($commands) => $this->replaceCommands($commands))
-            ->pipe(fn ($commands) => $this->prefixCommands($commands))
-            ->pipe(fn ($commands) => $commands->merge($this->buildOptions($options)))
-            ->filter()
-            ->values()
-            ->all();
-    }
-
     protected function normalizeCommand($command): Collection
     {
         return collect(Arr::wrap($command))
             ->flatten()
             ->flatMap(
-                fn ($item) => is_string($item)
+                fn($item) => \is_string($item)
                 ? Str::of($item)->trim()->explode(' ')
                 : Arr::wrap($item)
             )
@@ -137,14 +137,14 @@ final class ExternalCommand
     {
         return collect($options)
             ->mapWithKeys(
-                fn ($value, $key) => is_int($key)
+                fn($value, $key) => \is_int($key)
                 ? [$value => true]
                 : [$key => $value]
             )
             ->map(
-                fn ($value, $key) => $value === false || $value === null
+                fn($value, $key) => $value === false || $value === null
                 ? null
-                : (is_bool($value) ? $key : "{$key}={$value}")
+                : (\is_bool($value) ? $key : "{$key}={$value}")
             )
             ->filter()
             ->values()
@@ -153,18 +153,18 @@ final class ExternalCommand
 
     protected function replaceCommands(Collection $commands): Collection
     {
-        if (! $this->withRunner) {
+        if (!$this->withRunner) {
             return $commands;
         }
 
         $replace = $this->withRunner->replaces();
 
-        return $commands->map(fn ($command) => $replace[$command] ?? $command);
+        return $commands->map(fn($command) => $replace[$command] ?? $command);
     }
 
     protected function prefixCommands(Collection $commands): Collection
     {
-        if (! $this->withRunner) {
+        if (!$this->withRunner) {
             return $commands;
         }
 
@@ -172,7 +172,7 @@ final class ExternalCommand
         $runnerCommand = $this->withRunner->command();
 
         return $commands->flatMap(
-            callback: fn ($command) => in_array($command, $prefixable, true)
+            callback: fn($command) => \in_array($command, $prefixable, true)
             ? [$runnerCommand, $command]
             : [$command]
         );

@@ -324,44 +324,11 @@ For Sail users:
 3. Verify ports 80/3306 are available
 4. Run `sail up -d` manually if needed
 
-## Architecture
-
-The package follows clean architecture principles:
-
-```
-src/
-├── Console/
-│   ├── Commands/          # Main commands
-│   │   ├── AppBootstrap.php
-│   │   ├── AppDown.php
-│   │   └── Helpers/       # Helper commands
-│   ├── ExternalCommand.php
-│   ├── ExternalCommandManager.php
-│   └── InterruptibleCommand.php
-├── Contracts/             # Interfaces
-├── Enums/                 # Enumerations
-├── Exceptions/            # Custom exceptions
-├── Runners/               # Runner implementations
-├── Services/              # Business logic
-│   ├── DatabaseManager.php
-│   ├── ToolInstaller.php
-│   └── VersionChecker.php
-└── BootstrapServiceProvider.php
-```
-
 ## Requirements
 
 - PHP 8.4+
 - Laravel 12.x
 - Composer 2.x
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## License
 

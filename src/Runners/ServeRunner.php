@@ -18,19 +18,12 @@ abstract class ServeRunner implements Serve
     {
         $this->command = new ExternalCommandManager($this->getRunner(), $command?->getOutput());
         $this->console = $command;
-        if (! $this->isAvailableOnSystem()) {
+        if (!$this->isAvailableOnSystem()) {
             throw new \RuntimeException("The command {$this->getRunner()->command()} is not available on the system. Please install it with all its dependencies.");
         }
     }
 
     abstract public function serve(): int;
-
-    public function postServe(): int
-    {
-        $this->console?->info("Done! You can now access your application at {$this->getUrl()}");
-
-        return 0;
-    }
 
     abstract public function isAvailableOnSystem(): bool;
 
@@ -41,6 +34,21 @@ abstract class ServeRunner implements Serve
     abstract public function getUrl(): string;
 
     abstract public function getRunner(): ExternalCommandRunner;
+
+    abstract public function openInBrowser(): void;
+
+    public function postServe(): int
+    {
+        $shouldOpen = config('bootstrap.browser.auto_open', true);
+
+        if ($shouldOpen) {
+            $this->openInBrowser();
+        }
+
+        $this->console?->info("Done! You can now access your application at {$this->getUrl()}");
+
+        return 0;
+    }
 
     public function getOutput(): ?OutputStyle
     {

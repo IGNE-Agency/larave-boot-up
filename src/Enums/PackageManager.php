@@ -43,4 +43,13 @@ enum PackageManager: string
             self::NPM => 'run dev',
         };
     }
+
+    public function installPackageManagerCommand(string $version = 'latest'): string
+    {
+        return match ($this) {
+            self::BUN => OSCommand::INSTALL_BUN->forVersion($version)->execute(),
+            self::YARN => OSCommand::INSTALL_YARN->forVersion($version)->execute(),
+            self::NPM => OSCommand::INSTALL_NPM->forVersion($version)->execute(),
+        };
+    }
 }

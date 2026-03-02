@@ -2,6 +2,8 @@
 
 namespace Igne\LaravelBootstrap\Services;
 
+use Igne\LaravelBootstrap\Enums\OSCommand;
+use Igne\LaravelBootstrap\Enums\PackageManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
@@ -26,50 +28,31 @@ final class ToolInstaller
 
     protected function installBun(string $version, ?OutputInterface $output): void
     {
-        $command = $version === 'latest'
-            ? 'curl -fsSL https://bun.sh/install | bash'
-            : "curl -fsSL https://bun.sh/install | bash -s \"bun-v{$version}\"";
-
+        $command = PackageManager::BUN->installPackageManagerCommand($version);
         $this->runCommand($command, $output);
     }
 
     protected function installNode(string $version, ?OutputInterface $output): void
     {
-        if (PHP_OS_FAMILY === 'Darwin') {
-            $command = $version === 'latest'
-                ? 'brew install node'
-                : "brew install node@{$version}";
-        } else {
-            $command = $version === 'latest'
-                ? 'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs'
-                : "curl -fsSL https://deb.nodesource.com/setup_{$version}.x | sudo -E bash - && sudo apt-get install -y nodejs";
-        }
-
+        $command = OSCommand::INSTALL_NODE->forVersion($version)->execute();
         $this->runCommand($command, $output);
     }
 
     protected function installComposer(string $version, ?OutputInterface $output): void
     {
-        $command = 'curl -sS https://getcomposer.org/installer | php && sudo mv composer.phar /usr/local/bin/composer';
-        
+        $command = OSCommand::INSTALL_COMPOSER->execute();
         $this->runCommand($command, $output);
     }
 
     protected function installYarn(string $version, ?OutputInterface $output): void
     {
-        $command = $version === 'latest'
-            ? 'npm install -g yarn'
-            : "npm install -g yarn@{$version}";
-
+        $command = PackageManager::YARN->installPackageManagerCommand($version);
         $this->runCommand($command, $output);
     }
 
     protected function installNpm(string $version, ?OutputInterface $output): void
     {
-        $command = $version === 'latest'
-            ? 'npm install -g npm@latest'
-            : "npm install -g npm@{$version}";
-
+        $command = PackageManager::NPM->installPackageManagerCommand($version);
         $this->runCommand($command, $output);
     }
 
@@ -77,14 +60,14 @@ final class ToolInstaller
     {
         $process = Process::fromShellCommandline($command);
         $process->setTimeout(300);
-        
+
         $process->run(function ($type, $buffer) use ($output) {
             if ($output) {
                 $output->write($buffer);
             }
         });
 
-        if (! $process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new \RuntimeException("Failed to run command: {$command}");
         }
     }

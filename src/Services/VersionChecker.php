@@ -33,7 +33,7 @@ final class VersionChecker
     {
         try {
             $response = Http::timeout(5)->get('https://api.github.com/repos/oven-sh/bun/releases/latest');
-            
+
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
                 return ltrim($tag, 'v');
@@ -48,11 +48,11 @@ final class VersionChecker
     {
         try {
             $response = Http::timeout(5)->get('https://nodejs.org/dist/index.json');
-            
+
             if ($response->successful()) {
                 $versions = $response->json();
                 $ltsVersions = array_filter($versions, fn($v) => isset($v['lts']) && $v['lts'] !== false);
-                
+
                 if (!empty($ltsVersions)) {
                     $latest = reset($ltsVersions);
                     return ltrim($latest['version'], 'v');
@@ -68,7 +68,7 @@ final class VersionChecker
     {
         try {
             $response = Http::timeout(5)->get('https://api.github.com/repos/composer/composer/releases/latest');
-            
+
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
                 return ltrim($tag, 'v');
@@ -83,7 +83,7 @@ final class VersionChecker
     {
         try {
             $response = Http::timeout(5)->get('https://api.github.com/repos/yarnpkg/yarn/releases/latest');
-            
+
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
                 return ltrim($tag, 'v');
@@ -98,7 +98,7 @@ final class VersionChecker
     {
         try {
             $response = Http::timeout(5)->get('https://registry.npmjs.org/npm/latest');
-            
+
             if ($response->successful()) {
                 return $response->json('version');
             }
@@ -110,6 +110,19 @@ final class VersionChecker
 
     protected function getLatestPhpVersion(): string
     {
+        try {
+            $response = Http::timeout(5)->get('https://www.php.net/releases/index.php?json&version=8');
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (isset($data['version'])) {
+                    return $data['version'];
+                }
+            }
+        } catch (\Exception $e) {
+        }
+
         return '8.4.0';
     }
 }

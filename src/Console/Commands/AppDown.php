@@ -24,25 +24,25 @@ final class AppDown extends InterruptibleCommand implements Isolatable
 
         if ($herdRunner->isRunning()) {
             $shouldStopRunner = $this->shouldStopRunner('Herd');
-            
+
             if ($shouldStopRunner) {
                 $this->info('Stopping Laravel Herd...');
                 $herdRunner->cleanup();
             } else {
                 $this->info('Stopping processes but keeping Herd running...');
-                $this->command->stopAllProcesses();
+                $this->externalProcessManager->stopAllProcesses();
             }
         }
-        
+
         if ($sailRunner->isRunning()) {
             $shouldStopRunner = $this->shouldStopRunner('Sail');
-            
+
             if ($shouldStopRunner) {
                 $this->info('Stopping Sail containers...');
                 $sailRunner->cleanup();
             } else {
                 $this->info('Stopping processes but keeping Sail running...');
-                $this->command->stopAllProcesses();
+                $this->externalProcessManager->stopAllProcesses();
             }
         }
 
@@ -54,7 +54,7 @@ final class AppDown extends InterruptibleCommand implements Isolatable
     public function cleanup(int $signal): void
     {
         $this->info('Cleaning up application environment...');
-        $this->command->stopAllProcesses();
+        $this->externalProcessManager->stopAllProcesses();
         $this->info('Exit completed gracefully.');
     }
 
@@ -63,7 +63,7 @@ final class AppDown extends InterruptibleCommand implements Isolatable
         $shouldPrompt = config('bootstrap.shutdown.prompt_runner_stop', true);
         $defaultStop = config('bootstrap.shutdown.default_stop_runner', false);
 
-        if (! $shouldPrompt) {
+        if (!$shouldPrompt) {
             return $defaultStop;
         }
 

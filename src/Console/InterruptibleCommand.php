@@ -16,7 +16,7 @@ abstract class InterruptibleCommand extends Command implements Interruptible
 
     protected array $interruptSignals;
 
-    protected ExternalCommandManager $command;
+    public ExternalCommandManager $externalProcessManager;
 
     public function __construct(array $interruptSignals = self::DEFAULT_SIGNALS)
     {
@@ -31,7 +31,7 @@ abstract class InterruptibleCommand extends Command implements Interruptible
             $runnerName = $this->argument('runner');
             $runner = $runnerName instanceof ExternalCommandRunner ? $runnerName : ExternalCommandRunner::from($runnerName);
         }
-        $this->command = new ExternalCommandManager(
+        $this->externalProcessManager = new ExternalCommandManager(
             $runner,
             $this->output
         );
@@ -53,7 +53,7 @@ abstract class InterruptibleCommand extends Command implements Interruptible
     {
         $this->warn('Interrupt signal received. Cleaning up...');
         $this->cleanup($signal);
-        $this->command->stopAllProcesses();
+        $this->externalProcessManager->stopAllProcesses();
         $this->info('Exit completed gracefully.');
         exit(0);
     }

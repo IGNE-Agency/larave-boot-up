@@ -3,6 +3,7 @@
 namespace Igne\LaravelBootstrap\Runners;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\OSCommand;
 
 final class ServeHerdRunner extends ServeRunner
 {
@@ -19,8 +20,6 @@ final class ServeHerdRunner extends ServeRunner
 
     public function postServe(): int
     {
-        $herd = ExternalCommandRunner::HERD->command();
-        $this->command->call("{$herd} open");
         $pm = $this->command->getPackageManager();
         $this->command->packageManager($pm->devCommand());
 
@@ -35,8 +34,9 @@ final class ServeHerdRunner extends ServeRunner
     public function isRunning(): bool
     {
         $herd = ExternalCommandRunner::HERD->command();
+        $checkCommand = OSCommand::CHECK_PROCESS->forProcess($herd)->execute();
 
-        return $this->command->isCommandRunning("pgrep -f {$herd}");
+        return $this->command->isCommandRunning($checkCommand);
     }
 
     public function cleanup(): void
@@ -55,5 +55,16 @@ final class ServeHerdRunner extends ServeRunner
     public function getRunner(): ExternalCommandRunner
     {
         return ExternalCommandRunner::HERD;
+    }
+
+    public function openInBrowser(): void
+    {
+        $herd = ExternalCommandRunner::HERD->command();
+
+        if (OSCommand::OPEN_BROWSER->canExecute()) {
+            $this->command->callSilent("{$herd} open");
+        } else {
+            $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
+        }
     }
 }

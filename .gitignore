@@ -142,6 +142,7 @@ Homestead.yaml
 /coverage
 TEST*.xml
 .phpunit.result.cache
+.phpunit.cache
 
 # --------------- Temporary & Miscellaneous Files --------------- #
 /playground

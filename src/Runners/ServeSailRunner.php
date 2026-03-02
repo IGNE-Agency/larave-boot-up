@@ -3,8 +3,10 @@
 namespace Igne\LaravelBootstrap\Runners;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Exceptions\ServeException;
-use Artisan;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 final class ServeSailRunner extends ServeRunner
 {
@@ -29,7 +31,7 @@ final class ServeSailRunner extends ServeRunner
     public function isAvailableOnSystem(): bool
     {
         return
-            file_exists(base_path(ExternalCommandRunner::SAIL->command()))
+            File::exists(base_path(ExternalCommandRunner::SAIL->command()))
             && $this->command->isCommandAvailable('docker');
 
     }
@@ -55,6 +57,16 @@ final class ServeSailRunner extends ServeRunner
     public function getRunner(): ExternalCommandRunner
     {
         return ExternalCommandRunner::SAIL;
+    }
+
+    public function openInBrowser(): void
+    {
+        if (OSCommand::OPEN_BROWSER->canExecute()) {
+            $url = $this->getUrl();
+            $this->command->callSilent(OSCommand::OPEN_BROWSER->forUrl($url)->execute());
+        } else {
+            $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
+        }
     }
 
     protected function installSail(): self
@@ -86,7 +98,7 @@ final class ServeSailRunner extends ServeRunner
         }
 
         $this->console?->info('Starting Docker containers...');
-        $this->command->call('open -a Docker');
+        $this->command->call(OSCommand::START_DOCKER->execute());
         $this->waitForDocker();
 
         return $this;
@@ -177,13 +189,13 @@ final class ServeSailRunner extends ServeRunner
 
     protected function isSailCorrectlyInstalled(): bool
     {
-        if (!file_exists(base_path('docker-compose.yml'))) {
+        if (!File::exists(base_path('docker-compose.yml'))) {
             $this->console?->info('docker-compose.yml not found, installing Sail...');
 
             return false;
         }
 
-        if (!file_exists(base_path('.devcontainer/devcontainer.json'))) {
+        if (!File::exists(base_path('.devcontainer/devcontainer.json'))) {
             $this->console?->info('.devcontainer/devcontainer.json not found, installing Sail...');
 
             return false;

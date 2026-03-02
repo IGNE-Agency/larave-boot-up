@@ -3,6 +3,7 @@
 namespace Igne\LaravelBootstrap\Runners;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\OSCommand;
 
 final class ServeLaravelRunner extends ServeRunner
 {
@@ -34,7 +35,7 @@ final class ServeLaravelRunner extends ServeRunner
     public function cleanup(): void
     {
         $this->command->stopAllProcesses();
-        $this->command->call('pkill -f "php artisan serve"');
+        $this->command->callSilent(OSCommand::KILL_PHP_ARTISAN->execute());
         $this->console?->info('Laravel server stopped');
     }
 
@@ -46,5 +47,15 @@ final class ServeLaravelRunner extends ServeRunner
     public function getRunner(): ExternalCommandRunner
     {
         return ExternalCommandRunner::LARAVEL;
+    }
+
+    public function openInBrowser(): void
+    {
+        if (OSCommand::OPEN_BROWSER->canExecute()) {
+            $url = $this->getUrl();
+            $this->command->callSilent(OSCommand::OPEN_BROWSER->forUrl($url)->execute());
+        } else {
+            $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
+        }
     }
 }
