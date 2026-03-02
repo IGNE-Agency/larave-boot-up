@@ -19,7 +19,7 @@ A comprehensive Laravel application bootstrap package for local development with
 Install as a development dependency:
 
 ```bash
-composer require igne/laravel-bootstrap --dev
+composer require igne-agency/laravel-bootstrap --dev
 ```
 
 The package will auto-register via Laravel's package discovery.
