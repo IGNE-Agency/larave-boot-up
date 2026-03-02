@@ -1,0 +1,52 @@
+{
+    "name": "igne/laravel-bootstrap",
+    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-runner support (Herd, Sail, Laravel)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rick Blanksma",
+            "email": "rick@igne.nl"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "illuminate/support": "^12.0",
+        "illuminate/console": "^12.0",
+        "illuminate/database": "^12.0",
+        "symfony/process": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Igne\\LaravelBootstrap\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Igne\\LaravelBootstrap\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Igne\\LaravelBootstrap\\BootstrapServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

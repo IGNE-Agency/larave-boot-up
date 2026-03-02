@@ -1,0 +1,183 @@
+# --------------- General Gitignore Patterns --------------- #
+# These are some examples of commonly ignored file patterns.
+# You should customize this list as applicable to your project.
+# Learn more about .gitignore:
+# https://www.atlassian.com/git/tutorials/saving-changes/gitignore
+
+# --------------- Production Directories --------------- #
+/dist
+/build
+
+# --------------- Dependency Directories --------------- #
+/node_modules
+/vendor
+/lib
+/package-lock.json
+/.yarn
+.pnp.cjs
+.pnp.loader.mjs
+.yarnrc.yml
+
+# --------------- Public Files --------------- #
+/public/build
+/public/hot
+/public/storage
+/public/vendor
+
+# --------------- Environment Files --------------- #
+.env
+.env.*
+!env.example
+
+# --------------- Security Files --------------- #
+/storage/*.key
+auth.json
+auth.js
+
+# --------------- Log Files --------------- #
+/storage/logs/*
+/storage/pail
+*.log
+npm-debug.log
+yarn-debug.log*
+yarn-error.log
+
+# --------------- Cache Files --------------- #
+/storage/framework/*
+/.phpunit.cache
+*.cache
+
+# --------------- Generated Files --------------- #
+/storage/debugbar/*
+_ide_*.php
+.phpactor.json
+/.fleet
+/.nova
+/.zed
+
+# --------------- Storage --------------- #
+/storage/*
+!/storage/app
+!/storage/app/*
+
+# --------------- Package Files --------------- #
+*.jar
+
+# --------------- IDE & Editor Files --------------- #
+## VSCode
+/.vscode/*
+/.ionide
+/.history/
+# ...unignore the folder itself so we can re-include specific files
+!.vscode/
+# ...unignore specific files
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+## Jetbrains (IntelliJ, PhpStorm, WebStorm)
+/.idea/
+/.idea_modules/
+/out/
+/.out
+*.iws
+
+# Ignore JetBrains specific files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/aws.xml
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/gradle.xml
+.idea/**/libraries
+.idea/**/replstate.xml
+.idea/**/mongoSettings.xml
+.idea/**/sonarlint/
+.idea/caches/build_file_checksums.ser
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+# Android Studio specific
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+## Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+## Atom
+.atom/
+
+# --------------- Maven & Gradle Files --------------- #
+/target
+/gradle
+.idea/**/gradle.xml
+
+# --------------- CMake Files --------------- #
+cmake-build-*/
+
+# --------------- Virtual Machine Files --------------- #
+Homestead.json
+Homestead.yaml
+/.vagrant
+
+# --------------- Linters --------------- #
+/linters
+
+# --------------- Unit Test Reports --------------- #
+/coverage
+TEST*.xml
+.phpunit.result.cache
+
+# --------------- Temporary & Miscellaneous Files --------------- #
+/playground
+/dev
+/vendor-sync-exclude
+
+# --------------- OS Specific Files --------------- #
+## macOS
+.DS_Store
+
+## Windows
+Thumbs.db
+
+# --------------- Application Executables --------------- #
+*.app
+*.exe
+*.war
+
+# --------------- Media Files --------------- #
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+# --------------- Notes Files --------------- #
+*.txt
+
+# --------------- Config Files --------------- #
+.phpactor.json
+
+# --------------- Binaries --------------- #
+*.bin
+*.exe
+
+# --------------- Database Dumps --------------- #
+*.sql
+*.sqlite
