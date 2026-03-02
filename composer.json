@@ -1,8 +1,17 @@
 {
     "name": "igne/laravel-bootstrap",
-    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-runner support (Herd, Sail, Laravel)",
+    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-runner support (Herd, Sail, Laravel). Development only - not for production use.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "bootstrap",
+        "development",
+        "local-development",
+        "herd",
+        "sail",
+        "dev-tools"
+    ],
     "authors": [
         {
             "name": "Rick Blanksma",

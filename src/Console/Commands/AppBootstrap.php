@@ -2,6 +2,7 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands;
 
+use Igne\LaravelBootstrap\Concerns\ChecksEnvironment;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Serve;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
@@ -17,6 +18,7 @@ use Illuminate\Contracts\Console\Isolatable;
 
 final class AppBootstrap extends InterruptibleCommand implements Isolatable
 {
+    use ChecksEnvironment;
     protected $signature = 'app:serve {runner? : The serve runner to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
         {--m|migrate=true : Migrate the database}
@@ -29,6 +31,8 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
     public function handleWithInterrupts(): int
     {
+        $this->ensureLocalEnvironment();
+
         $this->info('Starting app...');
         $this->newLine(1);
 
@@ -84,7 +88,7 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
     protected function determineRunner(): string
     {
         $runnerArg = $this->argument('runner');
-        
+
         if ($runnerArg) {
             return strtolower($runnerArg);
         }
@@ -92,7 +96,7 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
         $defaultRunner = config('bootstrap.runner.default');
         $shouldPrompt = config('bootstrap.runner.prompt', true);
 
-        if ($defaultRunner && ! $shouldPrompt) {
+        if ($defaultRunner && !$shouldPrompt) {
             return strtolower($defaultRunner);
         }
 
@@ -102,7 +106,7 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
     protected function promptForRunner(): string
     {
         $this->info('Select your development environment:');
-        
+
         $choice = $this->choice(
             'Which runner would you like to use?',
             ['herd', 'sail', 'laravel'],

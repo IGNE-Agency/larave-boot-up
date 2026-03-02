@@ -16,11 +16,15 @@ A comprehensive Laravel application bootstrap package for local development with
 
 ## Installation
 
+Install as a development dependency:
+
 ```bash
-composer require igne/laravel-bootstrap
+composer require igne/laravel-bootstrap --dev
 ```
 
 The package will auto-register via Laravel's package discovery.
+
+> **Important:** Always use the `--dev` flag to ensure this package is only installed in development environments and excluded from production deployments.
 
 ## Quick Start
 
@@ -329,6 +333,23 @@ For Sail users:
 - PHP 8.4+
 - Laravel 12.x
 - Composer 2.x
+
+## Production Safety
+
+This package is **automatically excluded** from production when installed with `--dev`. Composer will not install dev dependencies when you run:
+
+```bash
+composer install --no-dev
+```
+
+This ensures the package and its commands are never available in production environments.
+
+### Environment Detection
+
+The package includes safety checks to prevent accidental use in non-local environments. Commands will refuse to run if:
+
+- `APP_ENV` is set to `production`, `staging` or `development`
+- The environment is detected as a remote server
 
 ## License
 
