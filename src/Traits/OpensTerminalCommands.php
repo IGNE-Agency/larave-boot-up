@@ -5,11 +5,23 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Traits;
 
 use Igne\LaravelBootstrap\Enums\OSCommand;
+use Igne\LaravelBootstrap\Services\IDEDetector;
 
 trait OpensTerminalCommands
 {
     protected function executeInSeparateTerminal(string $command): void
     {
+        $ideDetector = new IDEDetector();
+
+        if ($ideDetector->isRunningInIDE()) {
+            $ideCommand = $ideDetector->getIDETerminalCommand($command);
+
+            if ($ideCommand) {
+                shell_exec("{$ideCommand} > /dev/null 2>&1 &");
+                return;
+            }
+        }
+
         $terminalCommand = OSCommand::OPEN_TERMINAL
             ->withCommand($command)
             ->execute();
