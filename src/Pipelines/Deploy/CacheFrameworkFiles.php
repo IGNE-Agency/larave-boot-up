@@ -17,10 +17,37 @@ final readonly class CacheFrameworkFiles
 
         $command->info('Caching framework files...');
 
-        $command->call('config:cache');
-        $command->call('route:cache');
-        $command->call('view:cache');
+        $this->cacheConfig($command);
+        $this->cacheRoutes($command);
+        $this->cacheViews($command);
 
         return $next($command);
+    }
+
+    private function cacheConfig(InterruptibleCommand $command): void
+    {
+        try {
+            $command->call('config:cache');
+        } catch (\Throwable $e) {
+            $command->warn('Failed to cache config: ' . $e->getMessage());
+        }
+    }
+
+    private function cacheRoutes(InterruptibleCommand $command): void
+    {
+        try {
+            $command->call('route:cache');
+        } catch (\Throwable $e) {
+            $command->warn('Failed to cache routes: ' . $e->getMessage());
+        }
+    }
+
+    private function cacheViews(InterruptibleCommand $command): void
+    {
+        try {
+            $command->call('view:cache');
+        } catch (\Throwable $e) {
+            $command->warn('Failed to cache views: ' . $e->getMessage());
+        }
     }
 }

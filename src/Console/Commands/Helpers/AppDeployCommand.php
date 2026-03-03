@@ -73,10 +73,18 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
     public function finalizeRuntime(): self
     {
         $this->info('Clearing auth resets');
-        $this->call('auth:clear-resets');
+        try {
+            $this->callSilent('auth:clear-resets');
+        } catch (\Throwable $e) {
+            $this->warn('Failed to clear auth resets: ' . $e->getMessage());
+        }
 
         $this->info('Linking storage');
-        $this->call('storage:link');
+        try {
+            $this->callSilent('storage:link');
+        } catch (\Throwable $e) {
+            $this->warn('Failed to link storage: ' . $e->getMessage());
+        }
 
         return $this;
     }

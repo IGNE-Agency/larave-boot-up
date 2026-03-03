@@ -58,11 +58,15 @@ abstract readonly class RunCustomCommands implements ProvidesCustomCommands
             $command->info($bootstrapCommand->message);
         }
 
-        match ($bootstrapCommand->environment) {
-            CommandEnvironment::ARTISAN => $this->runArtisan($command, $bootstrapCommand),
-            CommandEnvironment::COMPOSER => $this->runComposer($command, $bootstrapCommand),
-            CommandEnvironment::PACKAGE_MANAGER => $this->runPackageManager($command, $bootstrapCommand),
-        };
+        try {
+            match ($bootstrapCommand->environment) {
+                CommandEnvironment::ARTISAN => $this->runArtisan($command, $bootstrapCommand),
+                CommandEnvironment::COMPOSER => $this->runComposer($command, $bootstrapCommand),
+                CommandEnvironment::PACKAGE_MANAGER => $this->runPackageManager($command, $bootstrapCommand),
+            };
+        } catch (\Throwable $e) {
+            $command->warn("Failed to execute custom command '{$bootstrapCommand->command}': " . $e->getMessage());
+        }
     }
 
     private function runArtisan(InterruptibleCommand $command, BootstrapCommand $bootstrapCommand): void
