@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Services;
 
 use Igne\LaravelBootstrap\Contracts\InstallsTools;
+use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Enums\PackageManager;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,6 +13,14 @@ use Symfony\Component\Process\Process;
 
 final class ToolInstaller implements InstallsTools
 {
+    private ?ExternalCommandRunner $runner = null;
+
+    public function setRunner(?ExternalCommandRunner $runner): self
+    {
+        $this->runner = $runner;
+        return $this;
+    }
+
     public function install(string $tool, string $version, ?OutputInterface $output = null): void
     {
         match ($tool) {
@@ -34,7 +43,19 @@ final class ToolInstaller implements InstallsTools
 
     protected function installPhp(string $version, ?OutputInterface $output): void
     {
+        if ($this->runner === ExternalCommandRunner::HERD) {
+            $this->installPhpWithHerd($version, $output);
+            return;
+        }
+
         $command = OSCommand::INSTALL_PHP->forVersion($version)->execute();
+        $this->runCommand($command, $output);
+    }
+
+    protected function installPhpWithHerd(string $version, ?OutputInterface $output): void
+    {
+        $phpVersion = $version === 'latest' ? 'php' : $version;
+        $command = "herd php:install {$phpVersion} && herd use {$phpVersion}";
         $this->runCommand($command, $output);
     }
 

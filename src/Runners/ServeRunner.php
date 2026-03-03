@@ -70,6 +70,7 @@ abstract class ServeRunner implements Serve
         $this->console?->warn("{$tool} not found. Installing (required for {$this->getRunner()->value} runner)...");
 
         $installer = new ToolInstaller();
+        $installer->setRunner($this->getRunner());
         $installer->install($tool, 'latest', $this->console?->getOutput());
 
         $this->console?->info("{$tool} installed successfully. Note: You may need to restart your terminal or system for {$tool} to be fully functional.");

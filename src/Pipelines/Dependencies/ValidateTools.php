@@ -21,6 +21,12 @@ final readonly class ValidateTools
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
+        $runner = $command->argument('runner');
+        if ($runner && !$runner instanceof \Igne\LaravelBootstrap\Enums\ExternalCommandRunner) {
+            $runner = \Igne\LaravelBootstrap\Enums\ExternalCommandRunner::from($runner);
+        }
+
+        $this->installer->setRunner($runner);
         $this->validateAllTools($command);
 
         return $next($command);
