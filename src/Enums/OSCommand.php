@@ -2,8 +2,6 @@
 
 namespace Igne\LaravelBootstrap\Enums;
 
-use Igne\LaravelBootstrap\Console\ExternalCommand;
-use Symfony\Component\Console\Command\Command;
 use Illuminate\Support\Facades\File;
 
 enum OSCommand: string
@@ -12,12 +10,15 @@ enum OSCommand: string
     case CHECK_PROCESS = 'check_process';
     case OPEN_TERMINAL = 'open_terminal';
     case START_DOCKER = 'start_docker';
+    case INSTALL_PHP = 'install_php';
     case INSTALL_BUN = 'install_bun';
     case INSTALL_NODE = 'install_node';
     case INSTALL_COMPOSER = 'install_composer';
     case INSTALL_YARN = 'install_yarn';
     case INSTALL_NPM = 'install_npm';
     case INSTALL_HOMEBREW = 'install_homebrew';
+    case INSTALL_DOCKER = 'install_docker';
+    case INSTALL_HERD = 'install_herd';
     case OPEN_BROWSER = 'open_browser';
 
     public function forProcess(string $process): OSCommandBuilder
@@ -25,7 +26,7 @@ enum OSCommand: string
         return (new OSCommandBuilder($this))->forProcess($process);
     }
 
-    public function withCommand(ExternalCommand|Command|string $command): OSCommandBuilder
+    public function withCommand(string $command): OSCommandBuilder
     {
         return (new OSCommandBuilder($this))->withCommand($command);
     }

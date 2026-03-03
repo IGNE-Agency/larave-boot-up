@@ -73,9 +73,6 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
         $this->info('Linking storage');
         $this->call('storage:link');
 
-        $this->info('Restarting queues');
-        $this->call('queue:restart');
-
         return $this;
     }
 }

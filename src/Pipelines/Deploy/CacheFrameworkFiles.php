@@ -11,8 +11,12 @@ final readonly class CacheFrameworkFiles
 {
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
+        if (!config('bootstrap.deploy.enable_caching', true)) {
+            return $next($command);
+        }
+
         $command->info('Caching framework files...');
-        
+
         $command->call('config:cache');
         $command->call('route:cache');
         $command->call('view:cache');

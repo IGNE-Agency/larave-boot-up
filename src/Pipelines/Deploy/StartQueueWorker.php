@@ -41,7 +41,7 @@ final readonly class StartQueueWorker
     private function startInSeparateTerminal(InterruptibleCommand $command): void
     {
         $terminalCommand = OSCommand::OPEN_TERMINAL
-            ->withCommand(new Command('queue:work'))
+            ->withCommand('php artisan queue:work')
             ->execute();
 
         if ($terminalCommand) {
@@ -52,8 +52,7 @@ final readonly class StartQueueWorker
 
     private function startInBackground(InterruptibleCommand $command): void
     {
-        $queueConnection = config('bootstrap.queue.connection', 'database');
-        $command->externalProcessManager->call(['php', 'artisan', 'queue:work', $queueConnection, '--daemon']);
+        $command->call('queue:work');
         $command->info('Queue worker started in background.');
     }
 }

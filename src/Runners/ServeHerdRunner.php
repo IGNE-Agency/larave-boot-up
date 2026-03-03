@@ -32,6 +32,11 @@ final class ServeHerdRunner extends ServeRunner
         return $this->command->isCommandAvailable(ExternalCommandRunner::HERD->command());
     }
 
+    public function ensureRunnerInstalled(): void
+    {
+        $this->installRunnerIfMissing('herd');
+    }
+
     public function isRunning(): bool
     {
         $herd = ExternalCommandRunner::HERD->command();

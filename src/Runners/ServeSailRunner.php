@@ -39,6 +39,11 @@ final class ServeSailRunner extends ServeRunner
 
     }
 
+    public function ensureRunnerInstalled(): void
+    {
+        $this->installRunnerIfMissing('docker');
+    }
+
     public function isRunning(): bool
     {
         return $this->isSailRunning() || $this->isDockerRunning();

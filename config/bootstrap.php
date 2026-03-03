@@ -44,4 +44,9 @@ return [
         'prompt_runner_stop' => env('BOOTSTRAP_PROMPT_RUNNER_STOP', true),
         'default_stop_runner' => env('BOOTSTRAP_DEFAULT_STOP_RUNNER', false),
     ],
+
+    'deploy' => [
+        'separate_terminal' => env('BOOTSTRAP_DEPLOY_SEPARATE_TERMINAL', true),
+        'enable_caching' => env('BOOTSTRAP_ENABLE_CACHING', true),
+    ],
 ];

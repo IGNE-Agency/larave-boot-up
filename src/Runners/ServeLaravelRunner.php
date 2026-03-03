@@ -28,6 +28,11 @@ final class ServeLaravelRunner extends ServeRunner
         return true;
     }
 
+    public function ensureRunnerInstalled(): void
+    {
+        // Laravel runner has no external dependencies
+    }
+
     public function isRunning(): bool
     {
         return true;

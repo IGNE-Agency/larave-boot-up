@@ -24,6 +24,8 @@ final class VersionChecker implements ChecksVersions
             'yarn' => $this->getLatestYarnVersion(),
             'npm' => $this->getLatestNpmVersion(),
             'php' => $this->getLatestPhpVersion(),
+            'docker' => $this->getLatestDockerVersion(),
+            'herd' => $this->getLatestHerdVersion(),
             default => '0.0.0'
         };
 
@@ -127,5 +129,35 @@ final class VersionChecker implements ChecksVersions
         }
 
         return '8.4.0';
+    }
+
+    protected function getLatestDockerVersion(): string
+    {
+        try {
+            $response = Http::timeout(5)->get('https://api.github.com/repos/docker/docker-ce/releases/latest');
+
+            if ($response->successful()) {
+                $tag = $response->json('tag_name');
+                return ltrim($tag, 'v');
+            }
+        } catch (\Exception $e) {
+        }
+
+        return '24.0.0';
+    }
+
+    protected function getLatestHerdVersion(): string
+    {
+        try {
+            $response = Http::timeout(5)->get('https://herd.laravel.com/api/versions/latest');
+
+            if ($response->successful()) {
+                $version = $response->json('version');
+                return ltrim($version, 'v');
+            }
+        } catch (\Exception $e) {
+        }
+
+        return '1.0.0';
     }
 }

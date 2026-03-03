@@ -15,11 +15,14 @@ final class ToolInstaller implements InstallsTools
     public function install(string $tool, string $version, ?OutputInterface $output = null): void
     {
         match ($tool) {
+            'php' => $this->installPhp($version, $output),
             'bun' => $this->installBun($version, $output),
             'node' => $this->installNode($version, $output),
             'composer' => $this->installComposer($version, $output),
             'yarn' => $this->installYarn($version, $output),
             'npm' => $this->installNpm($version, $output),
+            'docker' => $this->installDocker($version, $output),
+            'herd' => $this->installHerd($version, $output),
             default => throw new \InvalidArgumentException("Unknown tool: {$tool}")
         };
     }
@@ -27,6 +30,12 @@ final class ToolInstaller implements InstallsTools
     public function update(string $tool, string $version, ?OutputInterface $output = null): void
     {
         $this->install($tool, $version, $output);
+    }
+
+    protected function installPhp(string $version, ?OutputInterface $output): void
+    {
+        $command = OSCommand::INSTALL_PHP->forVersion($version)->execute();
+        $this->runCommand($command, $output);
     }
 
     protected function installBun(string $version, ?OutputInterface $output): void
@@ -56,6 +65,18 @@ final class ToolInstaller implements InstallsTools
     protected function installNpm(string $version, ?OutputInterface $output): void
     {
         $command = PackageManager::NPM->installPackageManagerCommand($version);
+        $this->runCommand($command, $output);
+    }
+
+    protected function installDocker(string $version, ?OutputInterface $output): void
+    {
+        $command = OSCommand::INSTALL_DOCKER->execute();
+        $this->runCommand($command, $output);
+    }
+
+    protected function installHerd(string $version, ?OutputInterface $output): void
+    {
+        $command = OSCommand::INSTALL_HERD->execute();
         $this->runCommand($command, $output);
     }
 

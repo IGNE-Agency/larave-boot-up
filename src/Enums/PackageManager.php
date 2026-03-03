@@ -52,4 +52,24 @@ enum PackageManager: string
             self::NPM => OSCommand::INSTALL_NPM->forVersion($version)->execute(),
         };
     }
+
+    public function lockFile(): string
+    {
+        return match ($this) {
+            self::BUN => 'bun.lockb',
+            self::YARN => 'yarn.lock',
+            self::NPM => 'package-lock.json',
+        };
+    }
+
+    /**
+     * @return array<PackageManager>
+     */
+    public function getOtherPackageManagers(): array
+    {
+        return \array_filter(
+            self::cases(),
+            fn(PackageManager $manager): bool => $manager !== $this
+        );
+    }
 }

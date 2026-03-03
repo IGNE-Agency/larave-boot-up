@@ -35,7 +35,7 @@ final readonly class DeployApplication
     private function deployInSeparateTerminal(Serve $runner): void
     {
         $terminalCommand = OSCommand::OPEN_TERMINAL
-            ->withCommand(new Command("app:deploy {$runner->getRunner()->value}"))
+            ->withCommand("php artisan app:deploy {$runner->getRunner()->value}")
             ->execute();
 
         if ($terminalCommand) {
