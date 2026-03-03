@@ -21,7 +21,11 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
 
     public function handleWithInterrupts(): int
     {
-        $this->info('Checking database...');
+        $this->newLine();
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->info('🗄️  CHECKING DATABASE');
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->newLine();
 
         try {
             app(\Illuminate\Pipeline\Pipeline::class)
@@ -37,7 +41,7 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
                     return $command;
                 });
         } catch (\Throwable $e) {
-            throw new DatabaseCheckException($e->getMessage(), $e->getCode(), $e);
+            throw new DatabaseCheckException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;

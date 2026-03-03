@@ -34,7 +34,11 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
             $this->output
         );
 
-        $this->info('Booting up Laravel...');
+        $this->newLine();
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->info('🚀 DEPLOYING LARAVEL APPLICATION');
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->newLine();
 
         try {
             app(\Illuminate\Pipeline\Pipeline::class)
@@ -54,7 +58,7 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
                     return $command;
                 });
         } catch (\Throwable $e) {
-            throw new AppDeploymentException($e->getMessage(), $e->getCode(), $e);
+            throw new AppDeploymentException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;

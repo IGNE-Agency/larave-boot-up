@@ -163,6 +163,7 @@ final readonly class InstallFrontendDependencies
     private function deleteOtherLockFiles(PackageManager $packageManager): Collection
     {
         return collect($packageManager->getOtherPackageManagers())
+            ->filter(fn(PackageManager $manager): bool => File::exists($this->getLockFilePath($manager)))
             ->each($this->deleteLockFile(...))
             ->map(fn(PackageManager $manager): string => $manager->lockFile())
             ->values();

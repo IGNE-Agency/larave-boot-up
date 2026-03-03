@@ -11,13 +11,18 @@ final class ServeHerdRunner extends ServeRunner
     public function serve(): int
     {
         $herd = ExternalCommandRunner::HERD->command();
-        $this->console?->info('Setting up Herd for this project...');
+
+        $this->console?->newLine();
+        $this->console?->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->console?->info('⚡ SETTING UP HERD');
+        $this->console?->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->console?->newLine();
 
         $this->command->callSilent("{$herd} link");
-        $this->console?->info('Project linked to Herd.');
+        $this->console?->info('✓ Project linked to Herd');
 
         $this->command->callSilent("{$herd} secure");
-        $this->console?->info('HTTPS certificate configured.');
+        $this->console?->info('✓ HTTPS certificate configured');
 
         return Command::SUCCESS;
     }

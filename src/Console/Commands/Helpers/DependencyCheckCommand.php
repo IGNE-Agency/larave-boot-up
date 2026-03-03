@@ -21,7 +21,11 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
 
     public function handleWithInterrupts(): int
     {
-        $this->info('Checking dependencies...');
+        $this->newLine();
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->info('📋 CHECKING DEPENDENCIES');
+        $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->newLine();
 
         try {
             app(\Illuminate\Pipeline\Pipeline::class)
@@ -38,7 +42,7 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
                     return $command;
                 });
         } catch (\Throwable $e) {
-            throw new DependencyCheckException($e->getMessage(), $e->getCode(), $e);
+            throw new DependencyCheckException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;
