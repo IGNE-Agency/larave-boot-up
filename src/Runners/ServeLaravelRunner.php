@@ -17,9 +17,6 @@ final class ServeLaravelRunner extends ServeRunner
 
     public function postServe(): int
     {
-        $pm = $this->command->getPackageManager();
-        $this->command->packageManager($pm->devCommand());
-
         return parent::postServe();
     }
 

@@ -41,7 +41,7 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
                 ->send($this)
                 ->through([
                     \Igne\LaravelBootstrap\Pipelines\Deploy\InstallComposerDependencies::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\BuildFrontendAssets::class,
+                    \Igne\LaravelBootstrap\Pipelines\Deploy\InstallFrontendDependencies::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsBeforeMigrations::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\RunDatabaseMigrations::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsAfterMigrations::class,

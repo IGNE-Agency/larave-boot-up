@@ -20,6 +20,7 @@ final class ServeApplication
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\EnsureLocalEnvironment::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\CheckDatabase::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\DeployApplication::class,
+                \Igne\LaravelBootstrap\Pipelines\Bootstrap\BuildOrWatchAssets::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\PostServeActions::class,
             ])
             ->thenReturn();

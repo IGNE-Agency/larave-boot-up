@@ -12,13 +12,13 @@ use Igne\LaravelBootstrap\Services\PackageJsonManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
-final readonly class BuildFrontendAssets
+final readonly class InstallFrontendDependencies
 {
     public function __construct(
         private PackageJsonManager $packageJsonManager
     ) {
     }
-    
+
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         if ($this->shouldSkipFrontendSetup()) {
@@ -31,7 +31,7 @@ final readonly class BuildFrontendAssets
 
         $this->prepareEnvironment($command, $packageManager);
         $this->manageDependencies($command, $packageManager);
-        $this->buildAssets($command, $packageManager);
+        $this->validateBuildWillSucceed($command, $packageManager);
 
         return $next($command);
     }
@@ -63,10 +63,19 @@ final readonly class BuildFrontendAssets
         $this->installDependencies($command, $packageManager);
     }
 
-    private function buildAssets(InterruptibleCommand $command, PackageManager $packageManager): void
+    private function validateBuildWillSucceed(InterruptibleCommand $command, PackageManager $packageManager): void
     {
-        $command->info('Building frontend assets');
-        $command->externalProcessManager->packageManager($packageManager->buildCommand());
+        $command->info('Validating build configuration...');
+
+        $packageJson = $this->packageJsonManager->read();
+
+        if ($packageJson === null) {
+            return;
+        }
+
+        if (!isset($packageJson['scripts']['build']) && !isset($packageJson['scripts']['dev'])) {
+            $command->warn('No build or dev script found in package.json. Asset building may fail.');
+        }
     }
 
     private function shouldUpdateDependencies(InterruptibleCommand $command): bool
