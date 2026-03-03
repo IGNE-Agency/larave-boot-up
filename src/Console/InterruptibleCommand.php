@@ -29,7 +29,9 @@ abstract class InterruptibleCommand extends Command implements Interruptible
         $runner = null;
         if ($this->hasArgument('runner')) {
             $runnerName = $this->argument('runner');
-            $runner = $runnerName instanceof ExternalCommandRunner ? $runnerName : ExternalCommandRunner::from($runnerName);
+            if ($runnerName && \is_string($runnerName)) {
+                $runner = $runnerName instanceof ExternalCommandRunner ? $runnerName : ExternalCommandRunner::from($runnerName);
+            }
         }
         $this->externalProcessManager = new ExternalCommandManager(
             $runner,
@@ -55,6 +57,6 @@ abstract class InterruptibleCommand extends Command implements Interruptible
         $this->cleanup($signal);
         $this->externalProcessManager->stopAllProcesses();
         $this->info('Exit completed gracefully.');
-        exit(0);
+        exit(Command::SUCCESS);
     }
 }

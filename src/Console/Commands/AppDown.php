@@ -2,24 +2,22 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands;
 
-use Igne\LaravelBootstrap\Concerns\ChecksEnvironment;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Runners\ServeHerdRunner;
 use Igne\LaravelBootstrap\Runners\ServeSailRunner;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
+use function Laravel\Prompts\confirm;
+
 final class AppDown extends InterruptibleCommand implements Isolatable
 {
-    use ChecksEnvironment;
     protected $signature = 'app:down';
 
     protected $description = 'Shut down the local Laravel environment (Sail, Herd, etc.) and optionally clean up';
 
     public function handleWithInterrupts(): int
     {
-        $this->ensureLocalEnvironment();
-
         $this->info('Stopping application environment...');
         $this->newLine(1);
 
@@ -71,9 +69,12 @@ final class AppDown extends InterruptibleCommand implements Isolatable
             return $defaultStop;
         }
 
-        return $this->confirm(
-            "Do you want to stop {$runnerName} itself? (No will only stop running processes)",
-            $defaultStop
+        return confirm(
+            label: "Do you want to stop {$runnerName} itself?",
+            default: $defaultStop,
+            yes: 'Stop runner',
+            no: 'Keep runner (only stop processes)',
+            hint: 'Choose whether to fully stop the runner or just the processes'
         );
     }
 }

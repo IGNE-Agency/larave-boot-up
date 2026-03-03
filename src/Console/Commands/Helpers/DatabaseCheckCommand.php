@@ -12,6 +12,11 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
 
     protected $description = 'Make sure the database is correct for development';
 
+    /**
+     * Indicates whether the command should be hidden from the Artisan command list.
+     *
+     * @var bool
+     */
     protected $hidden = true;
 
     public function handleWithInterrupts(): int

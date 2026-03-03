@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Igne\LaravelBootstrap\Services;
 
+use Igne\LaravelBootstrap\Contracts\ManagesDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-final class DatabaseManager
+final class DatabaseManager implements ManagesDatabase
 {
     public function databaseExists(string $database): bool
     {

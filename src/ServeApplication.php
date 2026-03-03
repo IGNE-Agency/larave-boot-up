@@ -17,6 +17,7 @@ final class ServeApplication
             ->through([
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\ServeRunner::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\CheckDependencies::class,
+                \Igne\LaravelBootstrap\Pipelines\Bootstrap\EnsureLocalEnvironment::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\CheckDatabase::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\DeployApplication::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\PostServeActions::class,

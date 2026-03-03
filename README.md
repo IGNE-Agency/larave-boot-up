@@ -256,6 +256,41 @@ BOOTSTRAP_AUTO_START_QUEUE=false
 
 ## Advanced Features
 
+### Custom Bootstrap Commands
+
+You can hook into the bootstrap process to run your own commands (e.g., code generation, type generation). Create a class implementing `ProvidesBootstrapCommands` and register it in your service provider:
+
+```php
+// app/Bootstrap/CustomBootstrapCommands.php
+use Igne\LaravelBootstrap\Contracts\ProvidesBootstrapCommands;
+use Igne\LaravelBootstrap\Data\DTOs\BootstrapCommand;
+
+class CustomBootstrapCommands implements ProvidesBootstrapCommands
+{
+    public function beforeMigrations(): array
+    {
+        return [
+            BootstrapCommand::artisan('wayfinder:generate', 'Generating TypeScript routes...'),
+        ];
+    }
+
+    public function afterMigrations(): array
+    {
+        return [
+            BootstrapCommand::artisan('model:typer', 'Generating model types...'),
+        ];
+    }
+}
+
+// AppServiceProvider
+$this->app->singleton(
+    ProvidesBootstrapCommands::class,
+    CustomBootstrapCommands::class
+);
+```
+
+Commands can be Artisan, Composer, or Package Manager commands. See [CUSTOM_COMMANDS.md](CUSTOM_COMMANDS.md) for full documentation.
+
 ### Automatic Tool Installation
 
 When enabled, the package automatically installs missing tools:

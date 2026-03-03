@@ -18,18 +18,18 @@ final readonly class BuildFrontendAssets
             return $next($command);
         }
 
-        $pmEnum = $command->externalProcessManager->getPackageManager();
+        $pm = $command->externalProcessManager->getPackageManager();
 
         if ($command->hasOption('update') && $command->option('update')) {
             $command->info('Updating dependencies...');
-            $command->externalProcessManager->packageManager($pmEnum->updateCommand());
+            $command->externalProcessManager->packageManager($pm->updateCommand());
         }
 
         $command->info('Installing dependencies');
-        $command->externalProcessManager->packageManager($pmEnum->installCommand());
+        $command->externalProcessManager->packageManager($pm->installCommand());
 
         $command->info('Building frontend assets');
-        $command->externalProcessManager->packageManager($pmEnum->buildCommand());
+        $command->externalProcessManager->packageManager($pm->buildCommand());
 
         return $next($command);
     }

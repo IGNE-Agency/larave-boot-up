@@ -4,6 +4,7 @@ namespace Igne\LaravelBootstrap\Runners;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\OSCommand;
+use Illuminate\Console\Command;
 
 final class ServeLaravelRunner extends ServeRunner
 {
@@ -11,7 +12,7 @@ final class ServeLaravelRunner extends ServeRunner
     {
         $this->console?->info('Starting Laravel development server...');
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     public function postServe(): int

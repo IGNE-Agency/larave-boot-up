@@ -12,6 +12,11 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
 
     protected $description = 'Make sure the dependencies is correct for development';
 
+    /**
+     * Indicates whether the command should be hidden from the Artisan command list.
+     *
+     * @var bool
+     */
     protected $hidden = true;
 
     public function handleWithInterrupts(): int

@@ -17,11 +17,14 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
 
     protected $description = 'Boot up Laravel environment';
 
+    /**
+     * Indicates whether the command should be hidden from the Artisan command list.
+     *
+     * @var bool
+     */
     protected $hidden = true;
 
     public ExternalCommandManager $externalProcessManager;
-
-    protected const DEPENDENCY_COMMANDS = [];
 
     public function handleWithInterrupts(): int
     {
@@ -39,12 +42,14 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
                 ->through([
                     \Igne\LaravelBootstrap\Pipelines\Deploy\InstallComposerDependencies::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\BuildFrontendAssets::class,
+                    \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsBeforeMigrations::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\RunDatabaseMigrations::class,
+                    \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsAfterMigrations::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\CacheFrameworkFiles::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\StartQueueWorker::class,
                 ])
                 ->finally(function () {
-                    $this->info('Laravel booted successfully.');
+                    $this->info('✅ Laravel booted successfully.');
                 })
                 ->then(fn($command) => $command->finalizeRuntime());
         } catch (\Throwable $e) {

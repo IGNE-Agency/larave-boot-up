@@ -3,6 +3,7 @@
 namespace Igne\LaravelBootstrap\Console;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ use Symfony\Component\Process\Process;
 
 final class ExternalCommand
 {
+    use BuildsCommandOptions;
     private Process $process;
 
     private array $command = [];
@@ -133,23 +135,6 @@ final class ExternalCommand
             ->values();
     }
 
-    protected function buildOptions(array $options): array
-    {
-        return collect($options)
-            ->mapWithKeys(
-                fn($value, $key) => \is_int($key)
-                ? [$value => true]
-                : [$key => $value]
-            )
-            ->map(
-                fn($value, $key) => $value === false || $value === null
-                ? null
-                : (\is_bool($value) ? $key : "{$key}={$value}")
-            )
-            ->filter()
-            ->values()
-            ->all();
-    }
 
     protected function replaceCommands(Collection $commands): Collection
     {

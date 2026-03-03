@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Igne\LaravelBootstrap\Services;
 
+use Igne\LaravelBootstrap\Contracts\ChecksVersions;
 use Illuminate\Support\Facades\Http;
 
-final class VersionChecker
+final class VersionChecker implements ChecksVersions
 {
     protected array $cache = [];
 

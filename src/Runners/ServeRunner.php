@@ -6,13 +6,14 @@ use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Serve;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 
 abstract class ServeRunner implements Serve
 {
     protected ExternalCommandManager $command;
 
-    protected ?InterruptibleCommand $console;
+    public ?InterruptibleCommand $console;
 
     public function __construct(?InterruptibleCommand $command = null)
     {
@@ -47,11 +48,11 @@ abstract class ServeRunner implements Serve
 
         $this->console?->info("Done! You can now access your application at {$this->getUrl()}");
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     public function getOutput(): ?OutputStyle
     {
-        return $this->console->getOutput();
+        return $this->console?->getOutput();
     }
 }

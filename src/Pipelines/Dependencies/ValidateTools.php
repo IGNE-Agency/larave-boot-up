@@ -95,10 +95,10 @@ final readonly class ValidateTools
     {
         $process = $command->externalProcessManager->callSilent("{$toolName} -v");
 
-        return \Illuminate\Support\Str::of($process->getOutput())
-            ->trim()
-            ->ltrim('v')
-            ->match('/\d+(\.\d+)+/')
-            ->toString() ?: '0.0.0';
+        $output = \Illuminate\Support\Str::of($process->getOutput())->trim();
+
+        $version = $output->match('/v?(\d+\.\d+\.\d+)/');
+
+        return $version->toString() ?: '0.0.0';
     }
 }

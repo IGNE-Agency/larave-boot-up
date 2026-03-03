@@ -2,7 +2,6 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands;
 
-use Igne\LaravelBootstrap\Concerns\ChecksEnvironment;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Serve;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
@@ -16,9 +15,10 @@ use Igne\LaravelBootstrap\Runners\ServeSailRunner;
 use Igne\LaravelBootstrap\ServeApplication;
 use Illuminate\Contracts\Console\Isolatable;
 
+use function Laravel\Prompts\select;
+
 final class AppBootstrap extends InterruptibleCommand implements Isolatable
 {
-    use ChecksEnvironment;
     protected $signature = 'app:serve {runner? : The serve runner to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
         {--m|migrate=true : Migrate the database}
@@ -31,8 +31,6 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
     public function handleWithInterrupts(): int
     {
-        $this->ensureLocalEnvironment();
-
         $this->info('Starting app...');
         $this->newLine(1);
 
@@ -105,15 +103,17 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
     protected function promptForRunner(): string
     {
-        $this->info('Select your development environment:');
-
-        $choice = $this->choice(
-            'Which runner would you like to use?',
-            ['herd', 'sail', 'laravel'],
-            0
+        $choice = select(
+            label: 'Select your development environment',
+            options: [
+                'herd' => 'Laravel Herd - Fast local development with PHP and Nginx',
+                'sail' => 'Laravel Sail - Docker-based development environment',
+                'laravel' => 'Laravel Artisan - Built-in PHP development server',
+            ],
+            default: 'herd'
         );
 
-        return strtolower($choice);
+        return $choice;
     }
 
     protected function createRunner(string $runnerName): Serve

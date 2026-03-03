@@ -87,7 +87,7 @@ final class OSCommandBuilder
     private function openTerminal(string|array $command): string
     {
         $basePath = base_path();
-        $commandString = is_array($command) ? implode(' ', $command) : $command;
+        $commandString = \is_array($command) ? implode(' ', $command) : $command;
 
         return match (PHP_OS_FAMILY) {
             'Darwin' => "osascript -e 'tell app \"Terminal\" to do script \"cd {$basePath} && {$commandString}\"'",

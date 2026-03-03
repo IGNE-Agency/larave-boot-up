@@ -7,6 +7,9 @@ use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Exceptions\ServeException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Console\Command;
+
+use function Laravel\Prompts\spin;
 
 final class ServeSailRunner extends ServeRunner
 {
@@ -17,7 +20,7 @@ final class ServeSailRunner extends ServeRunner
             ->bootDocker()
             ->bootSail();
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     public function postServe(): int
@@ -122,55 +125,63 @@ final class ServeSailRunner extends ServeRunner
 
     protected function waitForDocker(): self
     {
-        $this->console?->info('Waiting for Docker to start...');
-        $this->command->waitFor(
-            fn() => $this->isDockerRunning(),
-            fn() => $this->console?->info('Docker containers started successfully.'),
-            fn($timeoutSeconds) => throw new ServeException("Docker failed to start in time. Waited for {$timeoutSeconds} seconds."),
-            onInterrupt: fn() => $this->console?->info('Docker startup interrupted.'),
-            isInterrupted: $this->console?->trap(
-                [SIGINT, SIGTERM],
-                function ($signal) {
-                    $this->cleanup();
-                    exit(0);
-                }
-            )
-        );
+        try {
+            spin(
+                callback: function () {
+                    $this->command->waitFor(
+                        fn() => $this->isDockerRunning(),
+                        fn() => $this->console?->info('Docker containers started successfully.'),
+                        fn($timeoutSeconds) => throw new ServeException("Docker failed to start in time. Waited for {$timeoutSeconds} seconds."),
+                        onInterrupt: fn() => throw new ServeException('Docker startup interrupted.'),
+                        isInterrupted: $this->console?->trap(
+                            [SIGINT, SIGTERM],
+                            function ($signal) {
+                                $this->cleanup();
+                                exit(Command::SUCCESS);
+                            }
+                        )
+                    );
+                },
+                message: 'Waiting for Docker to start...'
+            );
+        } catch (ServeException $e) {
+            $this->console?->error($e->getMessage());
+            throw $e;
+        }
 
         return $this;
     }
 
     protected function waitForSail(): self
     {
-        $this->console?->info('Waiting for Sail to start...');
         $timeoutSeconds = 600;
-        $this->console?->getOutput()->createProgressBar($timeoutSeconds);
-        $this->console?->getOutput()->progressStart();
-        $this->command->waitFor(
-            fn() => $this->isSailRunning(),
-            function () {
-                $this->console?->info('Sail started successfully.');
-                $this->console?->getOutput()->progressFinish();
-            },
-            function ($timeoutSeconds) {
-                $this->console?->getOutput()->progressFinish();
-                throw new ServeException("Sail failed to start in time. Waited for {$timeoutSeconds} seconds.");
-            },
-            fn() => $this->console?->getOutput()->progressAdvance(),
-            $timeoutSeconds,
-            1000,
-            function () {
-                $this->console?->info(string: 'Sail startup interrupted.');
-                $this->console?->getOutput()->progressFinish();
-            },
-            $this->console?->trap(
-                [SIGINT, SIGTERM],
-                function ($signal) {
-                    $this->cleanup();
-                    exit(0);
-                }
-            )
-        );
+
+        try {
+            spin(
+                callback: function () use ($timeoutSeconds) {
+                    $this->command->waitFor(
+                        fn() => $this->isSailRunning(),
+                        fn() => $this->console?->info('Sail started successfully.'),
+                        fn($timeoutSeconds) => throw new ServeException("Sail failed to start in time. Waited for {$timeoutSeconds} seconds."),
+                        fn() => null,
+                        $timeoutSeconds,
+                        1000,
+                        fn() => throw new ServeException('Sail startup interrupted.'),
+                        $this->console?->trap(
+                            [SIGINT, SIGTERM],
+                            function ($signal) {
+                                $this->cleanup();
+                                exit(Command::SUCCESS);
+                            }
+                        )
+                    );
+                },
+                message: 'Waiting for Sail to start...'
+            );
+        } catch (ServeException $e) {
+            $this->console?->error($e->getMessage());
+            throw $e;
+        }
 
         return $this;
     }

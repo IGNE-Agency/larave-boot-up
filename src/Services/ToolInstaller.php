@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Igne\LaravelBootstrap\Services;
 
+use Igne\LaravelBootstrap\Contracts\InstallsTools;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Enums\PackageManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-final class ToolInstaller
+final class ToolInstaller implements InstallsTools
 {
     public function install(string $tool, string $version, ?OutputInterface $output = null): void
     {

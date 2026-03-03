@@ -10,20 +10,25 @@ use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
 use Igne\LaravelBootstrap\Services\DatabaseManager;
 
+use function Laravel\Prompts\password;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\text;
+
 final readonly class CheckDatabaseSetup
 {
     public function __construct(
         private DatabaseManager $databaseManager = new DatabaseManager()
-    ) {}
+    ) {
+    }
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $missing = collect([
             'DB_CONNECTION' => config('database.default'),
-            'DB_HOST' => config('database.connections.'.config('database.default').'.host'),
-            'DB_PORT' => config('database.connections.'.config('database.default').'.port'),
-            'DB_DATABASE' => config('database.connections.'.config('database.default').'.database'),
-        ])->filter(fn ($value) => $value === null);
+            'DB_HOST' => config('database.connections.' . config('database.default') . '.host'),
+            'DB_PORT' => config('database.connections.' . config('database.default') . '.port'),
+            'DB_DATABASE' => config('database.connections.' . config('database.default') . '.database'),
+        ])->filter(fn($value) => $value === null);
 
         if ($missing->isNotEmpty()) {
             $this->handleMissingCredentials($command, $missing);
@@ -48,7 +53,7 @@ final readonly class CheckDatabaseSetup
     {
         $runner = $command->argument('runner');
         $runnerEnum = $runner instanceof ExternalCommandRunner ? $runner : ExternalCommandRunner::from($runner ?? 'herd');
-        $dbHost = config('database.connections.'.config('database.default').'.host');
+        $dbHost = config('database.connections.' . config('database.default') . '.host');
 
         if ($runnerEnum === ExternalCommandRunner::SAIL && $dbHost !== '127.0.0.1') {
             throw new DatabaseCheckException('Database host is not set to 127.0.0.1 needed for Sail. Please check your .env file.');
@@ -62,13 +67,46 @@ final readonly class CheckDatabaseSetup
     private function promptForDatabaseCredentials(InterruptibleCommand $command): void
     {
         $command->warn('Database credentials are missing. Please provide them:');
-        
-        $connection = $command->choice('Database connection type', ['mysql', 'pgsql', 'sqlite'], 0);
-        $host = $command->ask('Database host', '127.0.0.1');
-        $port = $command->ask('Database port', $connection === 'mysql' ? '3306' : '5432');
-        $database = $command->ask('Database name', 'laravel');
-        $username = $command->ask('Database username', 'root');
-        $password = $command->secret('Database password');
+        $command->newLine();
+
+        $connection = select(
+            label: 'Database connection type',
+            options: [
+                'mysql' => 'MySQL',
+                'pgsql' => 'PostgreSQL',
+                'sqlite' => 'SQLite',
+            ],
+            default: env('DB_CONNECTION', 'mysql')
+        );
+
+        $host = text(
+            label: 'Database host',
+            default: env('DB_HOST', '127.0.0.1'),
+            required: true
+        );
+
+        $port = text(
+            label: 'Database port',
+            default: env('DB_PORT', $connection === 'mysql' ? '3306' : '5432'),
+            required: true
+        );
+
+        $database = text(
+            label: 'Database name',
+            default: env('DB_DATABASE', str(config('app.name') ?? 'laravel')->slug()->toString()),
+            required: true
+        );
+
+        $username = text(
+            label: 'Database username',
+            default: env('DB_USERNAME', 'root'),
+            required: true
+        );
+
+        $password = password(
+            label: 'Database password',
+            required: false
+        );
 
         $this->databaseManager->updateEnvCredentials([
             'DB_CONNECTION' => $connection,

@@ -4,6 +4,7 @@ namespace Igne\LaravelBootstrap\Runners;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\OSCommand;
+use Illuminate\Console\Command;
 
 final class ServeHerdRunner extends ServeRunner
 {
@@ -11,11 +12,11 @@ final class ServeHerdRunner extends ServeRunner
     {
         $herd = ExternalCommandRunner::HERD->command();
         $this->console?->info('Starting Herd development server...');
-        $this->command->call("{$herd} link");
-        $this->command->call("{$herd} secure");
+        $this->command->callSilent("{$herd} link");
+        $this->command->callSilent("{$herd} secure");
         $this->command->call("{$herd} start");
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     public function postServe(): int
@@ -62,7 +63,7 @@ final class ServeHerdRunner extends ServeRunner
         $herd = ExternalCommandRunner::HERD->command();
 
         if (OSCommand::OPEN_BROWSER->canExecute()) {
-            $this->command->callSilent("{$herd} open");
+            $this->command->call("{$herd} open");
         } else {
             $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
         }
