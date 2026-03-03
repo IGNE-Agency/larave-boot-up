@@ -15,14 +15,14 @@ final readonly class EnsureLocalEnvironment
     {
         $env = app()->environment();
 
-        $allowedEnvironments = ['local'];
+        $allowedEnvironments = ['local', 'development'];
 
         if (!\in_array($env, $allowedEnvironments, true)) {
             if ($runner instanceof ServeRunner && $runner->console) {
                 $runner->console->error("⚠️  This command is for local development only and cannot run in '{$env}' environment.");
                 $runner->console->line('');
                 $runner->console->line('This package is designed exclusively for local development.');
-                $runner->console->line('Please ensure APP_ENV is set to "local".');
+                $runner->console->line('Please ensure APP_ENV is set to "local" or "development".');
             }
 
             exit(Command::FAILURE);
