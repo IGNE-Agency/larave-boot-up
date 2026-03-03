@@ -6,12 +6,14 @@ namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 
 use Closure;
 use Igne\LaravelBootstrap\Contracts\Serve;
-use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Enums\PackageManager;
 use Igne\LaravelBootstrap\Services\PackageJsonManager;
+use Igne\LaravelBootstrap\Traits\OpensTerminalCommands;
 
 final readonly class BuildOrWatchAssets
 {
+    use OpensTerminalCommands;
+
     public function __construct(
         private PackageJsonManager $packageJsonManager
     ) {
@@ -39,23 +41,12 @@ final readonly class BuildOrWatchAssets
         return !$this->packageJsonManager->exists();
     }
 
-    private function canOpenTerminal(): bool
-    {
-        return OSCommand::OPEN_TERMINAL->canExecute();
-    }
-
     private function buildOrWatchInSeparateTerminal(Serve $runner): void
     {
         $packageManager = $this->getPackageManager();
         $command = $this->getAssetCommand($packageManager);
 
-        $terminalCommand = OSCommand::OPEN_TERMINAL
-            ->withCommand("{$packageManager->value} {$command}")
-            ->execute();
-
-        if ($terminalCommand) {
-            shell_exec("{$terminalCommand} > /dev/null 2>&1 &");
-        }
+        $this->executeInSeparateTerminal("{$packageManager->value} {$command}");
     }
 
     private function buildAssetsSynchronously(Serve $runner): void
@@ -63,10 +54,7 @@ final readonly class BuildOrWatchAssets
         $packageManager = $this->getPackageManager();
         $command = $packageManager->buildCommand();
 
-        $output = $runner->getOutput();
-        if ($output) {
-            $output->info('Building frontend assets...');
-        }
+        $runner->getOutput()?->info('Building frontend assets...');
 
         shell_exec("{$packageManager->value} {$command}");
     }

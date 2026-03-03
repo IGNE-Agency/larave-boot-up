@@ -6,11 +6,11 @@ namespace Igne\LaravelBootstrap\Pipelines\Deploy;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\OSCommand;
-use Symfony\Component\Console\Command\Command;
+use Igne\LaravelBootstrap\Traits\OpensTerminalCommands;
 
 final readonly class StartQueueWorker
 {
+    use OpensTerminalCommands;
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $autoStart = config('bootstrap.queue.auto_start', true);
@@ -33,21 +33,10 @@ final readonly class StartQueueWorker
         return $next($command);
     }
 
-    private function canOpenTerminal(): bool
-    {
-        return OSCommand::OPEN_TERMINAL->canExecute();
-    }
-
     private function startInSeparateTerminal(InterruptibleCommand $command): void
     {
-        $terminalCommand = OSCommand::OPEN_TERMINAL
-            ->withCommand('php artisan queue:work')
-            ->execute();
-
-        if ($terminalCommand) {
-            $command->externalProcessManager->call($terminalCommand);
-            $command->info('Queue worker started in separate terminal.');
-        }
+        $this->executeInSeparateTerminal('php artisan queue:work');
+        $command->info('Queue worker started in separate terminal.');
     }
 
     private function startInBackground(InterruptibleCommand $command): void
