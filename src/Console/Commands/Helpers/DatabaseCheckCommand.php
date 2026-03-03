@@ -32,10 +32,10 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
                     \Igne\LaravelBootstrap\Pipelines\Database\VerifyDatabaseConnection::class,
                     \Igne\LaravelBootstrap\Pipelines\Database\RunInitialMigrations::class,
                 ])
-                ->finally(function () {
-                    $this->info('Database setup is correct.');
-                })
-                ->thenReturn();
+                ->then(function (InterruptibleCommand $command) {
+                    $this->info('✅ Database setup is correct.');
+                    return $command;
+                });
         } catch (\Throwable $e) {
             throw new DatabaseCheckException($e->getMessage(), $e->getCode(), $e);
         }

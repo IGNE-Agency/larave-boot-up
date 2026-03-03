@@ -117,11 +117,22 @@ final class OSCommandBuilder
         $cmd = is_array($command) ? implode(' ', $command) : $command;
 
         return match (PHP_OS_FAMILY) {
-            'Darwin' => "osascript -e 'tell app \"Terminal\" to do script \"cd {$basePath} && {$cmd}\"'",
+            'Darwin' => $this->openTerminalMacOS($basePath, $cmd),
             'Windows' => "start cmd /k \"cd /d {$basePath} && {$cmd}\"",
             'Linux' => $this->openTerminalLinux($basePath, $cmd),
             default => '',
         };
+    }
+
+    private function openTerminalMacOS(string $basePath, string $command): string
+    {
+        $escapedCommand = str_replace('"', '\\"', $command);
+
+        return sprintf(
+            "osascript -e 'tell app \"Terminal\" to do script \"cd %s && %s\"'",
+            $basePath,
+            $escapedCommand
+        );
     }
 
     private function openTerminalLinux(string $basePath, string $command): string

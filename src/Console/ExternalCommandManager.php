@@ -75,7 +75,7 @@ class ExternalCommandManager
         }
         $instance->call($command, $options);
         $process = $instance->process();
-        if ($process && $process->isRunning()) {
+        if ($process?->isRunning()) {
             $this->processes[] = $process;
         }
         $this->cleanupFinishedProcesses();

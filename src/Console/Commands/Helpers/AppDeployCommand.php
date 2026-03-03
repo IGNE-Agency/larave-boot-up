@@ -48,10 +48,11 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
                     \Igne\LaravelBootstrap\Pipelines\Deploy\CacheFrameworkFiles::class,
                     \Igne\LaravelBootstrap\Pipelines\Deploy\StartQueueWorker::class,
                 ])
-                ->finally(function () {
+                ->then(function (InterruptibleCommand $command) {
+                    $command->finalizeRuntime();
                     $this->info('✅ Laravel booted successfully.');
-                })
-                ->then(fn($command) => $command->finalizeRuntime());
+                    return $command;
+                });
         } catch (\Throwable $e) {
             throw new AppDeploymentException($e->getMessage(), $e->getCode(), $e);
         }

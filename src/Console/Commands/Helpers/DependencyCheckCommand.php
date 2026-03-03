@@ -27,14 +27,16 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
             app(\Illuminate\Pipeline\Pipeline::class)
                 ->send($this)
                 ->through([
+                    \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateRunnerServices::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\EnsureEnvFileExists::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\GenerateAppKey::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateTools::class,
                 ])
-                ->finally(function () {
-                    $this->info('All dependencies are correct.');
-                })
-                ->thenReturn();
+                ->then(function (InterruptibleCommand $command) {
+                    $this->info('✅ All dependencies are correct.');
+
+                    return $command;
+                });
         } catch (\Throwable $e) {
             throw new DependencyCheckException($e->getMessage(), $e->getCode(), $e);
         }
