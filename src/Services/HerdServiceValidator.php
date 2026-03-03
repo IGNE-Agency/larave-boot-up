@@ -81,7 +81,7 @@ final readonly class HerdServiceValidator
 
             if (!$this->areAllHerdServicesRunning($command)) {
                 throw new DependencyCheckException(
-                    'Failed to start Herd services correctly. Please check Herd status manually with: herd status'
+                    'Failed to start Herd services correctly. Please run "herd restart" manually and try again.'
                 );
             }
 
@@ -91,35 +91,16 @@ final readonly class HerdServiceValidator
 
     private function areAllHerdServicesRunning(InterruptibleCommand $command): bool
     {
-        $herd = ExternalCommandRunner::HERD->command();
-        $statusProcess = $command->externalProcessManager->callSilent("{$herd} status");
+        $requiredProcesses = ['nginx', 'php-fpm', 'dnsmasq'];
 
-        if (!$statusProcess->isSuccessful()) {
-            return false;
-        }
-
-        $output = $statusProcess->getOutput();
-        $requiredServices = ['nginx', 'php', 'dnsmasq'];
-
-        foreach ($requiredServices as $service) {
-            if (!$this->isServiceRunningInOutput($output, $service)) {
+        foreach ($requiredProcesses as $process) {
+            $checkCommand = OSCommand::CHECK_PROCESS->forProcess($process)->execute();
+            if (!$command->externalProcessManager->isCommandRunning($checkCommand)) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    private function isServiceRunningInOutput(string $output, string $service): bool
-    {
-        $lines = explode("\n", $output);
-        foreach ($lines as $line) {
-            if (stripos($line, $service) !== false) {
-                return stripos($line, 'running') !== false || stripos($line, 'started') !== false;
-            }
-        }
-
-        return false;
     }
 
     private function startHerdServices(InterruptibleCommand $command): void
