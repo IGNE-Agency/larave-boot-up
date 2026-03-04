@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 
 use Closure;
-use Igne\LaravelBootstrap\Contracts\Serve;
+use Igne\LaravelBootstrap\Contracts\Server;
 use Igne\LaravelBootstrap\Enums\PackageManager;
 use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
 use Igne\LaravelBootstrap\Managers\PackageJsonManager;
@@ -21,19 +21,19 @@ final readonly class BuildOrWatchAssets
     ) {
     }
 
-    public function handle(Serve $environment, Closure $next): Serve
+    public function handle(Server $server, Closure $next): Server
     {
         if ($this->shouldSkipAssetBuilding()) {
-            return $next($environment);
+            return $next($server);
         }
 
         if ($this->configResolver->shouldUseSeparateTerminal() && $this->canOpenTerminal()) {
             $this->buildOrWatchInSeparateTerminal();
         } else {
-            $this->buildAssetsSynchronously($environment);
+            $this->buildAssetsSynchronously($server);
         }
 
-        return $next($environment);
+        return $next($server);
     }
 
     private function shouldSkipAssetBuilding(): bool
@@ -49,12 +49,12 @@ final readonly class BuildOrWatchAssets
         $this->executeInSeparateTerminal("{$packageManager->value} {$command}");
     }
 
-    private function buildAssetsSynchronously(Serve $environment): void
+    private function buildAssetsSynchronously(Server $server): void
     {
         $packageManager = $this->getPackageManager();
         $command = $packageManager->buildCommand();
 
-        $environment->getOutput()?->info('Building frontend assets...');
+        $server->getOutput()?->info('Building frontend assets...');
 
         shell_exec("{$packageManager->value} {$command}");
     }

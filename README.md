@@ -1,10 +1,10 @@
 # Laravel Bootstrap
 
-A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-runner support.
+A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-server support.
 
 ## Features
 
-- **Multi-Runner Support**: Herd, Sail, or Laravel built-in server
+- **Multi-Server Support**: Herd, Sail, or Laravel built-in server
 - **Automatic Dependency Installation**: Auto-installs missing tools (bun, composer, node, etc.)
 - **Smart Version Management**: Support for specific versions or 'latest' for safe updates
 - **Database Auto-Setup**: Interactive database creation and credential management
@@ -29,10 +29,10 @@ The package will auto-register via Laravel's package discovery.
 ## Quick Start
 
 ```bash
-# Start your application (will prompt for runner if not specified)
+# Start your application (will prompt for server if not specified)
 php artisan app:serve
 
-# Or specify a runner directly
+# Or specify a server directly
 php artisan app:serve herd
 php artisan app:serve sail
 php artisan app:serve laravel
@@ -56,12 +56,12 @@ This creates `config/bootstrap.php` where you can configure all aspects of the p
 
 ### Configuration Options
 
-#### Runner Configuration
+#### Server Configuration
 
 ```php
-'runner' => [
-    'default' => env('BOOTSTRAP_RUNNER', null), // null = always prompt
-    'prompt' => env('BOOTSTRAP_PROMPT_RUNNER', true),
+'server' => [
+    'default' => env('BOOTSTRAP_SERVER', null), // null = always prompt
+    'prompt' => env('BOOTSTRAP_PROMPT_SERVER', true),
 ],
 ```
 
@@ -121,8 +121,8 @@ Use `'latest'` for automatic safe version updates, or specify exact versions lik
 
 ```php
 'shutdown' => [
-    'prompt_runner_stop' => env('BOOTSTRAP_PROMPT_RUNNER_STOP', true),
-    'default_stop_runner' => env('BOOTSTRAP_DEFAULT_STOP_RUNNER', false),
+    'prompt_server_stop' => env('BOOTSTRAP_PROMPT_SERVER_STOP', true),
+    'default_stop_server' => env('BOOTSTRAP_DEFAULT_STOP_SERVER', false),
 ],
 ```
 
@@ -131,12 +131,12 @@ Use `'latest'` for automatic safe version updates, or specify exact versions lik
 ### Starting Your Application
 
 ```bash
-php artisan app:serve {runner?} {--seed} {--migrate} {--update} {--no-frontend}
+php artisan app:serve {server?} {--seed} {--migrate} {--update} {--no-frontend}
 ```
 
 **Arguments:**
 
-- `runner` (optional): `herd`, `sail`, or `laravel`
+- `server` (optional): Development server - `herd`, `sail`, or `laravel`
 
 **Options:**
 
@@ -147,7 +147,7 @@ php artisan app:serve {runner?} {--seed} {--migrate} {--update} {--no-frontend}
 
 **What happens:**
 
-1. Interactive runner selection (if not specified)
+1. Interactive server selection (if not specified)
 2. Dependency checking and auto-installation
 3. Database credential prompts (if needed)
 4. Database creation (if doesn't exist)
@@ -165,7 +165,7 @@ php artisan app:down
 Interactive prompt asks whether to:
 
 - Stop only running processes (default)
-- Stop the runner itself (Herd/Sail)
+- Stop the server itself (Herd/Sail)
 
 ## Examples
 
@@ -185,7 +185,7 @@ php artisan app:serve
 
 The package will:
 
-- Prompt for runner selection
+- Prompt for server selection
 - Check for missing tools (node, bun, etc.)
 - Install missing tools automatically
 - Prompt for database credentials if missing
@@ -214,7 +214,7 @@ BUN_VERSION=latest
 COMPOSER_VERSION=latest
 ```
 
-### Different Runners
+### Different Servers
 
 **Laravel Herd:**
 
@@ -234,7 +234,7 @@ php artisan app:serve sail
 php artisan app:serve laravel
 ```
 
-### Environment-Specific Configuration
+### Server-Specific Configuration
 
 **Development (auto-install everything):**
 
@@ -377,14 +377,14 @@ This package is **automatically excluded** from production when installed with `
 composer install --no-dev
 ```
 
-This ensures the package and its commands are never available in production environments.
+This ensures the package and its commands are never available in production.
 
 ### Environment Detection
 
 The package includes safety checks to prevent accidental use in non-local environments. Commands will refuse to run if:
 
-- `APP_ENV` is set to `production`, `staging` or `development`
-- The environment is detected as a remote server
+- `APP_ENV` is not set to `local` or `development`
+- The system has detected as a remote server
 
 ## License
 

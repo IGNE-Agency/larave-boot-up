@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'runner' => [
-        'default' => env('BOOTSTRAP_RUNNER', null),
-        'prompt' => env('BOOTSTRAP_PROMPT_RUNNER', true),
+    'server' => [
+        'default' => env('BOOTSTRAP_SERVER', null),
+        'prompt' => env('BOOTSTRAP_PROMPT_SERVER', true),
     ],
 
     'package_manager' => [
@@ -41,8 +41,8 @@ return [
     ],
 
     'shutdown' => [
-        'prompt_runner_stop' => env('BOOTSTRAP_PROMPT_RUNNER_STOP', true),
-        'default_stop_runner' => env('BOOTSTRAP_DEFAULT_STOP_RUNNER', false),
+        'prompt_server_stop' => env('BOOTSTRAP_PROMPT_SERVER_STOP', true),
+        'default_stop_server' => env('BOOTSTRAP_DEFAULT_STOP_SERVER', false),
     ],
 
     'deploy' => [

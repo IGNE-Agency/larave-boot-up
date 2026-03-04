@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Verifiers;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
 
@@ -105,14 +105,14 @@ final readonly class HerdServiceValidator
 
     private function startHerdServices(InterruptibleCommand $command): void
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
         $command->externalProcessManager->call("{$herd} start");
         sleep(3);
     }
 
     private function restartHerdServices(InterruptibleCommand $command): void
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
         $command->externalProcessManager->callSilent("{$herd} stop");
         sleep(2);
         $command->externalProcessManager->callSilent("{$herd} restart");

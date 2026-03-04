@@ -8,9 +8,9 @@ You can register custom commands to run at two points in the bootstrap lifecycle
 - **Before migrations**: After dependencies are installed but before database migrations
 - **After migrations**: After database migrations but before caching and queue workers start
 
-## Supported Environments
+## Supported Server
 
-Commands can run in three safe environments:
+Commands can run in three safe server:
 - **Artisan**: Laravel artisan commands
 - **Composer**: Composer commands
 - **Package Manager**: npm/yarn/pnpm commands

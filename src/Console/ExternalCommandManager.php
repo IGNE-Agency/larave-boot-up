@@ -2,7 +2,7 @@
 
 namespace Igne\LaravelBootstrap\Console;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\PackageManager;
 use Igne\LaravelBootstrap\Verifiers\CommandPresenceVerifier;
 use Igne\LaravelBootstrap\Repositories\ProcessRepository;
@@ -15,7 +15,7 @@ use Symfony\Component\Process\Process;
 
 class ExternalCommandManager
 {
-    private ?ExternalCommandRunner $withRunner;
+    private ?DevServerOption $server;
     private ?OutputInterface $output;
     private bool $isSilent;
     private ProcessRepository $processRepository;
@@ -24,11 +24,11 @@ class ExternalCommandManager
     private ?PackageManager $packageManager = null;
 
     public function __construct(
-        ?ExternalCommandRunner $withRunner = null,
+        ?DevServerOption $server = null,
         ?OutputInterface $output = null,
         bool $isSilent = false
     ) {
-        $this->withRunner = $withRunner;
+        $this->server = $server;
         $this->output = $output ?: new StreamOutput(STDOUT);
         $this->isSilent = $isSilent;
         $this->packageManager = $this->resolvePackageManager();
@@ -39,7 +39,7 @@ class ExternalCommandManager
 
     public function create(?bool $silent = null): ExternalCommand
     {
-        return new ExternalCommand($this->withRunner, $this->output, $silent ?? $this->isSilent);
+        return new ExternalCommand($this->server, $this->output, $silent ?? $this->isSilent);
     }
 
     public function stopAllProcesses(): void

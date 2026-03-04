@@ -2,9 +2,9 @@
 
 namespace Igne\LaravelBootstrap\Console;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Resolvers\CommandResolver;
-use Igne\LaravelBootstrap\Development\ProcessRunner;
+use Igne\LaravelBootstrap\Development\ServerProcessor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
@@ -14,13 +14,13 @@ final class ExternalCommand
     private Process $process;
     private array $command = [];
     private CommandResolver $resolver;
-    private ProcessRunner $runner;
+    private ServerProcessor $serverProcessor;
     private OutputInterface $output;
     private ?int $timeout = null;
     private bool $isSilent;
 
     public function __construct(
-        ?ExternalCommandRunner $withRunner = null,
+        ?DevServerOption $server = null,
         ?OutputInterface $output = null,
         bool $isSilent = false
     ) {
@@ -29,16 +29,16 @@ final class ExternalCommand
         $this->timeout = null;
         $this->resolver = new CommandResolver(
             new \Igne\LaravelBootstrap\Parsers\CommandParser(),
-            $withRunner
+            $server
         );
-        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
+        $this->serverProcessor = new ServerProcessor($this->output, $this->isSilent, $this->timeout);
     }
 
-    public function withRunner(?ExternalCommandRunner $withRunner = null): self
+    public function withServer(?DevServerOption $server = null): self
     {
         $this->resolver = new CommandResolver(
             new \Igne\LaravelBootstrap\Parsers\CommandParser(),
-            $withRunner
+            $server
         );
 
         return $this;
@@ -47,7 +47,7 @@ final class ExternalCommand
     public function silent(bool $isSilent = true): self
     {
         $this->isSilent = $isSilent;
-        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
+        $this->serverProcessor = new ServerProcessor($this->output, $this->isSilent, $this->timeout);
 
         return $this;
     }
@@ -55,7 +55,7 @@ final class ExternalCommand
     public function timeout(int $timeout): self
     {
         $this->timeout = $timeout;
-        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
+        $this->serverProcessor = new ServerProcessor($this->output, $this->isSilent, $this->timeout);
 
         return $this;
     }
@@ -69,7 +69,7 @@ final class ExternalCommand
 
     public function run(): int
     {
-        $this->process = $this->runner->execute($this->command, base_path());
+        $this->process = $this->serverProcessor->execute($this->command, base_path());
 
         return $this->process->getExitCode();
     }
@@ -85,12 +85,12 @@ final class ExternalCommand
             return null;
         }
 
-        return $this->runner->getOutput($this->process);
+        return $this->serverProcessor->getOutput($this->process);
     }
 
     public function isSuccessful(): bool
     {
-        return isset($this->process) && $this->runner->isSuccessful($this->process);
+        return isset($this->process) && $this->serverProcessor->isSuccessful($this->process);
     }
 
     public function resolveCommand(string|array $command, array $options = []): array

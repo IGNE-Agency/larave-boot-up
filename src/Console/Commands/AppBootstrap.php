@@ -3,45 +3,45 @@
 namespace Igne\LaravelBootstrap\Console\Commands;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Contracts\Serve;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Contracts\Server;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
+use Igne\LaravelBootstrap\Factories\ServerFactory;
 use Igne\LaravelBootstrap\ServeApplication;
 use Igne\LaravelBootstrap\Handlers\ErrorHandler;
-use Igne\LaravelBootstrap\Factories\RunnerFactory;
-use Igne\LaravelBootstrap\Resolvers\RunnerResolver;
+use Igne\LaravelBootstrap\Resolvers\ServerResolver;
 use Illuminate\Contracts\Console\Isolatable;
 
 final class AppBootstrap extends InterruptibleCommand implements Isolatable
 {
-    protected $signature = 'app:serve {runner? : The serve runner to use (herd, sail, laravel)}
+    protected $signature = 'app:serve {server? : The development server to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
         {--m|migrate=true : Migrate the database}
         {--u|update : Update dependencies}
         {--no-frontend : Skip frontend setup}';
 
-    protected $description = 'Bootstrap the application environment and serve locally';
+    protected $description = 'Bootstrap the application server and serve locally';
 
-    protected Serve $environment;
+    protected Server $server;
 
     public function handleWithInterrupts(): int
     {
         $this->displayStartMessage();
 
-        $environmentName = $this->determineEnvironment();
-        $this->environment = $this->createEnvironment($environmentName);
+        $serverName = $this->determineServer();
+        $this->server = $this->createServer($serverName);
 
         if (!$this->bootApplication()) {
             return self::FAILURE;
         }
 
-        $this->displaySuccessMessages($environmentName);
+        $this->displaySuccessMessages($serverName);
 
         return self::SUCCESS;
     }
 
     public function cleanup(int $signal): void
     {
-        $this->environment?->cleanup();
+        $this->server?->cleanup();
         $this->call('app:down');
     }
 
@@ -51,21 +51,21 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
         $this->newLine(1);
     }
 
-    private function determineEnvironment(): string
+    private function determineServer(): string
     {
-        $resolver = new RunnerResolver();
-        return $resolver->determineRunner($this->argument('runner'));
+        $resolver = new ServerResolver();
+        return $resolver->determineServer($this->argument('server'));
     }
 
-    private function createEnvironment(string $environmentName): Serve
+    private function createServer(string $serverName): Server
     {
-        $factory = new RunnerFactory();
-        return $factory->create($environmentName, $this);
+        $factory = new ServerFactory();
+        return $factory->create($serverName, $this);
     }
 
     private function bootApplication(): bool
     {
-        $bootstrapper = new ServeApplication($this->environment);
+        $bootstrapper = new ServeApplication($this->server);
 
         try {
             $bootstrapper->boot();
@@ -79,15 +79,15 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
     private function handleBootstrapError(\Throwable $exception): void
     {
         $errorHandler = new ErrorHandler($this->output);
-        $errorHandler->handleBootstrapException($exception, $this->environment->getRunner()->value);
+        $errorHandler->handleBootstrapException($exception, $this->server->getServer()->value);
     }
 
-    private function displaySuccessMessages(string $environmentName): void
+    private function displaySuccessMessages(string $serverName): void
     {
         $this->newLine(2);
         $this->info("You can stop the server with php artisan app:down");
 
-        if ($this->environment->getRunner() === ExternalCommandRunner::SAIL) {
+        if ($this->server->getServer() === DevServerOption::SAIL) {
             $this->displaySailTips();
         }
     }

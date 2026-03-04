@@ -6,7 +6,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Database;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
 use Igne\LaravelBootstrap\Managers\DatabaseManager;
 
@@ -51,15 +51,15 @@ final readonly class CheckDatabaseSetup
 
     private function validateDatabaseHost(InterruptibleCommand $command): void
     {
-        $runner = $command->argument('runner');
-        $runnerEnum = $runner instanceof ExternalCommandRunner ? $runner : ExternalCommandRunner::from($runner ?? 'herd');
-        $dbHost = config('database.connections.' . config('database.default') . '.host');
+        $serverArgument = $command->argument('server');
+        $serverOption = $serverArgument instanceof DevServerOption ? $serverArgument : DevServerOption::from($serverArgument ?? config('bootstrap.server.default', 'herd'));
+        $dbHost = config(key: 'database.connections.' . config('database.default') . '.host');
 
-        if ($runnerEnum === ExternalCommandRunner::SAIL && $dbHost !== '127.0.0.1') {
+        if ($serverOption === DevServerOption::SAIL && $dbHost !== '127.0.0.1') {
             throw new DatabaseCheckException('Database host is not set to 127.0.0.1 needed for Sail. Please check your .env file.');
         }
 
-        if ($runnerEnum !== ExternalCommandRunner::SAIL && $dbHost !== '127.0.0.1') {
+        if ($serverOption !== DevServerOption::SAIL && $dbHost !== '127.0.0.1') {
             throw new DatabaseCheckException('Database host is not set to 127.0.0.1. Please check your .env file.');
         }
     }

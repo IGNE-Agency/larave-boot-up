@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Enums;
 
-enum CommandEnvironment: string
+enum CommandEnvironmentOption: string
 {
     case ARTISAN = 'artisan';
     case COMPOSER = 'composer';

@@ -288,7 +288,7 @@ final class OSCommandBuilder
         return "winget install {$package}{$versionFlag}";
     }
 
-    // ==================== Runner Installations ====================
+    // ==================== Server Installations ====================
 
     private function installHerd(): string
     {

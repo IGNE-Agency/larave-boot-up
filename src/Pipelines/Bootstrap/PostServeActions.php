@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 
 use Closure;
-use Igne\LaravelBootstrap\Contracts\Serve;
+use Igne\LaravelBootstrap\Contracts\Server;
 
 final readonly class PostServeActions
 {
-    public function handle(Serve $environment, Closure $next): Serve
+    public function handle(Server $server, Closure $next): Server
     {
-        $environment->postServe();
+        $server->postServe();
 
-        return $next($environment);
+        return $next($server);
     }
 }

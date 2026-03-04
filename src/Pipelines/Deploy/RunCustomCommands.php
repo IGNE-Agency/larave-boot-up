@@ -9,7 +9,7 @@ use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\ProvidesBootstrapCommands;
 use Igne\LaravelBootstrap\Contracts\ProvidesCustomCommands;
 use Igne\LaravelBootstrap\Data\DTOs\BootstrapCommand;
-use Igne\LaravelBootstrap\Enums\CommandEnvironment;
+use Igne\LaravelBootstrap\Enums\CommandEnvironmentOption;
 use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
 
 abstract readonly class RunCustomCommands implements ProvidesCustomCommands
@@ -60,9 +60,9 @@ abstract readonly class RunCustomCommands implements ProvidesCustomCommands
 
         try {
             match ($bootstrapCommand->environment) {
-                CommandEnvironment::ARTISAN => $this->runArtisan($command, $bootstrapCommand),
-                CommandEnvironment::COMPOSER => $this->runComposer($command, $bootstrapCommand),
-                CommandEnvironment::PACKAGE_MANAGER => $this->runPackageManager($command, $bootstrapCommand),
+                CommandEnvironmentOption::ARTISAN => $this->runArtisan($command, $bootstrapCommand),
+                CommandEnvironmentOption::COMPOSER => $this->runComposer($command, $bootstrapCommand),
+                CommandEnvironmentOption::PACKAGE_MANAGER => $this->runPackageManager($command, $bootstrapCommand),
             };
         } catch (\Throwable $e) {
             $command->warn("Failed to execute custom command '{$bootstrapCommand->command}': " . $e->getMessage());

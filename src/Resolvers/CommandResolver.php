@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Resolvers;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Parsers\CommandParser;
 use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
 use Illuminate\Support\Collection;
@@ -15,7 +15,7 @@ final class CommandResolver
 
     public function __construct(
         private readonly CommandParser $parser,
-        private readonly ?ExternalCommandRunner $runner = null
+        private readonly ?DevServerOption $server = null
     ) {
     }
 
@@ -33,27 +33,27 @@ final class CommandResolver
 
     private function replaceCommands(Collection $commands): Collection
     {
-        if (!$this->runner) {
+        if (!$this->server) {
             return $commands;
         }
 
-        $replace = $this->runner->replaces();
+        $replace = $this->server->replaces();
 
         return $commands->map(fn($command) => $replace[$command] ?? $command);
     }
 
     private function prefixCommands(Collection $commands): Collection
     {
-        if (!$this->runner) {
+        if (!$this->server) {
             return $commands;
         }
 
-        $prefixable = $this->runner->prefixes();
-        $runnerCommand = $this->runner->command();
+        $prefixable = $this->server->prefixes();
+        $serverCommand = $this->server->command();
 
         return $commands->flatMap(
             callback: fn($command) => \in_array($command, $prefixable, true)
-            ? [$runnerCommand, $command]
+            ? [$serverCommand, $command]
             : [$command]
         );
     }

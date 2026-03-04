@@ -6,15 +6,12 @@ namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 
 use Closure;
 use Igne\LaravelBootstrap\Contracts\Server;
-use Illuminate\Support\Facades\Artisan;
 
-final readonly class CheckDependencies
+final readonly class StartDevServer
 {
     public function handle(Server $server, Closure $next): Server
     {
-        Artisan::call('check:dependencies', [
-            'server' => $server->getServer()->value,
-        ], $server->getOutput());
+        $server->serve();
 
         return $next($server);
     }

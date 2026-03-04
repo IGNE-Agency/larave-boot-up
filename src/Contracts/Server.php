@@ -2,10 +2,10 @@
 
 namespace Igne\LaravelBootstrap\Contracts;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Illuminate\Console\OutputStyle;
 
-interface Serve
+interface Server
 {
     public function serve(): int;
 
@@ -19,7 +19,7 @@ interface Serve
 
     public function getUrl(): string;
 
-    public function getRunner(): ExternalCommandRunner;
+    public function getServer(): DevServerOption;
 
     public function getOutput(): ?OutputStyle;
 }

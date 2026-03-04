@@ -1,12 +1,12 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Development;
+namespace Igne\LaravelBootstrap\Servers;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Illuminate\Console\Command;
 
-final class LaravelDevEnvironment extends DevEnvironmentRunner
+final class LaravelServer extends DevServer
 {
     public function serve(): int
     {
@@ -25,9 +25,9 @@ final class LaravelDevEnvironment extends DevEnvironmentRunner
         return true;
     }
 
-    public function ensureRunnerInstalled(): void
+    public function ensureServerInstalled(): void
     {
-        // Laravel runner has no external dependencies
+        // Laravel server has no external dependencies
     }
 
     public function isRunning(): bool
@@ -47,9 +47,9 @@ final class LaravelDevEnvironment extends DevEnvironmentRunner
         return config('app.url');
     }
 
-    public function getRunner(): ExternalCommandRunner
+    public function getServer(): DevServerOption
     {
-        return ExternalCommandRunner::LARAVEL;
+        return DevServerOption::LARAVEL;
     }
 
     public function openInBrowser(): void

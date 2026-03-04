@@ -4,18 +4,18 @@ namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Exceptions\AppDeploymentException;
 use Illuminate\Contracts\Console\Isolatable;
 
 final class AppDeployCommand extends InterruptibleCommand implements Isolatable
 {
-    protected $signature = 'app:deploy {runner : The serve runner to use (herd, sail, laravel)}
+    protected $signature = 'app:deploy {server : The development server to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
         {--m|migrate : Migrate the database}
         {--u|update : Update backend dependencies}';
 
-    protected $description = 'Boot up Laravel environment';
+    protected $description = 'Boot up Laravel server';
 
     /**
      * Indicates whether the command should be hidden from the Artisan command list.
@@ -28,9 +28,9 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
 
     public function handleWithInterrupts(): int
     {
-        $runner = $this->argument('runner');
+        $server = $this->argument('server');
         $this->externalProcessManager = new ExternalCommandManager(
-            $runner instanceof ExternalCommandRunner ? $runner : ExternalCommandRunner::from($runner),
+            $server instanceof DevServerOption ? $server : DevServerOption::from($server),
             $this->output
         );
 

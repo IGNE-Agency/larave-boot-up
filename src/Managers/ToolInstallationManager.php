@@ -6,7 +6,7 @@ namespace Igne\LaravelBootstrap\Managers;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Development\ToolInstaller;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
 use Igne\LaravelBootstrap\Traits\HasOutputMethods;
 use Illuminate\Console\OutputStyle;
@@ -27,7 +27,7 @@ final class ToolInstallationManager
         return $this->output;
     }
 
-    public function ensureInstalled(string $tool, ExternalCommandRunner $runner): void
+    public function ensureInstalled(string $tool, DevServerOption $server): void
     {
         if ($this->isInstalled($tool)) {
             return;
@@ -37,7 +37,7 @@ final class ToolInstallationManager
             throw new \RuntimeException("{$tool} is not installed. Please install it manually or enable auto_install in config.");
         }
 
-        $this->install($tool, $runner);
+        $this->install($tool, $server);
     }
 
     private function isInstalled(string $tool): bool
@@ -45,20 +45,20 @@ final class ToolInstallationManager
         return $this->commandManager->isCommandAvailable($tool);
     }
 
-    private function install(string $tool, ExternalCommandRunner $runner): void
+    private function install(string $tool, DevServerOption $server): void
     {
-        $this->displayInstallMessage($tool, $runner);
+        $this->displayInstallMessage($tool, $server);
 
         $installer = new ToolInstaller();
-        $installer->setRunner($runner);
+        $installer->setServer($server);
         $installer->install($tool, 'latest', $this->output);
 
         $this->displaySuccessMessage($tool);
     }
 
-    private function displayInstallMessage(string $tool, ExternalCommandRunner $runner): void
+    private function displayInstallMessage(string $tool, DevServerOption $server): void
     {
-        $this->comment("{$tool} not found. Installing (required for {$runner->value} runner)...");
+        $this->comment("{$tool} not found. Installing (required for {$server->value} server)...");
     }
 
     private function displaySuccessMessage(string $tool): void

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Handlers;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
-use Igne\LaravelBootstrap\Contracts\Serve;
+use Igne\LaravelBootstrap\Contracts\Server;
 
-final class RunnerShutdownHandler
+final class ServerShutdownHandler
 {
     public function __construct(
         private readonly ExternalCommandManager $commandManager
@@ -15,12 +15,12 @@ final class RunnerShutdownHandler
     }
 
     public function handleShutdown(
-        Serve $runner,
-        bool $shouldStopRunner,
-        string $runnerName
+        Server $server,
+        bool $shouldStopServer,
+        string $serverName
     ): void {
-        if ($shouldStopRunner) {
-            $runner->cleanup();
+        if ($shouldStopServer) {
+            $server->cleanup();
             return;
         }
 

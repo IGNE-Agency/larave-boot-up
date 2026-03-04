@@ -6,10 +6,10 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Verifiers\HerdServiceValidator;
 
-final readonly class ValidateRunnerServices
+final readonly class ValidateServerServices
 {
     public function __construct(
         private HerdServiceValidator $herdValidator = new HerdServiceValidator()
@@ -18,20 +18,20 @@ final readonly class ValidateRunnerServices
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
-        $runner = $this->getRunnerFromCommand($command);
+        $server = $this->getServerFromCommand($command);
 
-        match ($runner) {
-            ExternalCommandRunner::HERD => $this->herdValidator->validate($command),
+        match ($server) {
+            DevServerOption::HERD => $this->herdValidator->validate($command),
             default => null,
         };
 
         return $next($command);
     }
 
-    private function getRunnerFromCommand(InterruptibleCommand $command): ExternalCommandRunner
+    private function getServerFromCommand(InterruptibleCommand $command): DevServerOption
     {
-        $runnerValue = $command->argument('runner');
+        $serverValue = $command->argument('server');
 
-        return ExternalCommandRunner::from($runnerValue);
+        return DevServerOption::from($serverValue);
     }
 }

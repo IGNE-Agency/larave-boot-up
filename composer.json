@@ -1,6 +1,6 @@
 {
     "name": "igne-agency/laravel-bootstrap",
-    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-runner support (Herd, Sail, Laravel). Development only - not for production use.",
+    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-server support (Herd, Sail, Laravel). Development only - not for production use.",
     "type": "library",
     "license": "MIT",
     "keywords": [

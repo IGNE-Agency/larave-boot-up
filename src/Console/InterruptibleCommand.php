@@ -3,7 +3,7 @@
 namespace Igne\LaravelBootstrap\Console;
 
 use Igne\LaravelBootstrap\Contracts\Interruptible;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Illuminate\Console\Command;
 
 abstract class InterruptibleCommand extends Command implements Interruptible
@@ -26,15 +26,15 @@ abstract class InterruptibleCommand extends Command implements Interruptible
 
     final public function handle(): int
     {
-        $runner = null;
-        if ($this->hasArgument('runner')) {
-            $runnerName = $this->argument('runner');
-            if ($runnerName && \is_string($runnerName)) {
-                $runner = $runnerName instanceof ExternalCommandRunner ? $runnerName : ExternalCommandRunner::from($runnerName);
+        $server = null;
+        if ($this->hasArgument('server')) {
+            $serverName = $this->argument('server');
+            if ($serverName && \is_string($serverName)) {
+                $server = $serverName instanceof DevServerOption ? $serverName : DevServerOption::from($serverName);
             }
         }
         $this->externalProcessManager = new ExternalCommandManager(
-            $runner,
+            $server,
             $this->output
         );
 

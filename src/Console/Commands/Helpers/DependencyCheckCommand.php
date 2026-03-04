@@ -8,7 +8,7 @@ use Illuminate\Contracts\Console\Isolatable;
 
 final class DependencyCheckCommand extends InterruptibleCommand implements Isolatable
 {
-    protected $signature = 'check:dependencies {runner : The runner to use (herd, sail, laravel)}';
+    protected $signature = 'check:dependencies {server : The development environment to use (herd, sail, laravel)}';
 
     protected $description = 'Make sure the dependencies is correct for development';
 
@@ -31,7 +31,7 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
             app(\Illuminate\Pipeline\Pipeline::class)
                 ->send($this)
                 ->through([
-                    \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateRunnerServices::class,
+                    \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateServerServices::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\EnsureEnvFileExists::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\GenerateAppKey::class,
                     \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateTools::class,

@@ -3,10 +3,10 @@
 namespace Igne\LaravelBootstrap\Console\Commands;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Development\HerdDevEnvironment;
-use Igne\LaravelBootstrap\Development\SailDevEnvironment;
+use Igne\LaravelBootstrap\Servers\HerdServer;
+use Igne\LaravelBootstrap\Servers\SailServer;
 use Igne\LaravelBootstrap\Terminators\BackgroundProcessTerminator;
-use Igne\LaravelBootstrap\Handlers\RunnerShutdownHandler;
+use Igne\LaravelBootstrap\Handlers\ServerShutdownHandler;
 use Igne\LaravelBootstrap\Confirmations\ShutdownConfirmation;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
@@ -15,13 +15,13 @@ final class AppDown extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'app:down';
 
-    protected $description = 'Shut down the local Laravel environment (Sail, Herd, etc.) and optionally clean up';
+    protected $description = 'Shut down the development server (Sail, Herd, etc.) and clean up';
 
     public function handleWithInterrupts(): int
     {
         $this->displayStartMessage();
         $this->stopBackgroundProcesses();
-        $this->shutdownDevEnvironments();
+        $this->shutdownDevServers();
         $this->displayCompletionMessage();
 
         return Command::SUCCESS;
@@ -29,14 +29,14 @@ final class AppDown extends InterruptibleCommand implements Isolatable
 
     public function cleanup(int $signal): void
     {
-        $this->info('Cleaning up application environment...');
+        $this->info('Cleaning up development server...');
         $this->externalProcessManager->stopAllProcesses();
         $this->info('Exit completed gracefully.');
     }
 
     private function displayStartMessage(): void
     {
-        $this->info('Stopping application environment...');
+        $this->info('Stopping development server...');
         $this->newLine(1);
     }
 
@@ -49,40 +49,40 @@ final class AppDown extends InterruptibleCommand implements Isolatable
         $processTerminator->stopAll($this->output);
     }
 
-    private function shutdownDevEnvironments(): void
+    private function shutdownDevServers(): void
     {
-        $this->shutdownDevEnvironment(new HerdDevEnvironment($this), 'Herd');
-        $this->shutdownDevEnvironment(new SailDevEnvironment($this), 'Sail');
+        $this->shutdownDevServer(new HerdServer($this), 'Herd');
+        $this->shutdownDevServer(new SailServer($this), 'Sail');
     }
 
-    private function shutdownDevEnvironment(mixed $environment, string $environmentName): void
+    private function shutdownDevServer(mixed $server, string $serverName): void
     {
-        if (!$environment->isRunning()) {
+        if (!$server->isRunning()) {
             return;
         }
 
         $confirmation = new ShutdownConfirmation();
-        $shouldStopEnvironment = $confirmation->shouldStopRunner($environmentName);
+        $shouldStopServer = $confirmation->shouldStopServer($serverName);
 
-        $this->displayEnvironmentAction($environmentName, $shouldStopEnvironment);
+        $this->displayServerAction($serverName, $shouldStopServer);
 
-        $shutdownHandler = new RunnerShutdownHandler($this->externalProcessManager);
-        $shutdownHandler->handleShutdown($environment, $shouldStopEnvironment, $environmentName);
+        $shutdownHandler = new ServerShutdownHandler($this->externalProcessManager);
+        $shutdownHandler->handleShutdown($server, $shouldStopServer, $serverName);
     }
 
-    private function displayEnvironmentAction(string $environmentName, bool $shouldStop): void
+    private function displayServerAction(string $serverName, bool $shouldStop): void
     {
         if ($shouldStop) {
-            $this->info("Stopping {$environmentName}...");
+            $this->info("Stopping {$serverName}...");
             return;
         }
 
-        $this->info("Stopping processes but keeping {$environmentName} running...");
+        $this->info("Stopping processes but keeping {$serverName} running...");
     }
 
     private function displayCompletionMessage(): void
     {
-        $this->info('Application environment has been stopped.');
+        $this->info('Development server has been stopped.');
     }
 
     private function resolveProcessTracker(): \Igne\LaravelBootstrap\Managers\ProcessTrackingManager

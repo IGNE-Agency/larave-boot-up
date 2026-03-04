@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Data\DTOs;
 
-use Igne\LaravelBootstrap\Enums\CommandEnvironment;
+use Igne\LaravelBootstrap\Enums\CommandEnvironmentOption;
 use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
 use InvalidArgumentException;
 
@@ -12,7 +12,7 @@ final readonly class BootstrapCommand
 {
     use BuildsCommandOptions;
     public function __construct(
-        public CommandEnvironment $environment,
+        public CommandEnvironmentOption $environment,
         public string $command,
         public ?string $message,
         public array $args = [],
@@ -22,17 +22,17 @@ final readonly class BootstrapCommand
 
     public static function artisan(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironment::ARTISAN, $command, $message, $args);
+        return new self(CommandEnvironmentOption::ARTISAN, $command, $message, $args);
     }
 
     public static function composer(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironment::COMPOSER, $command, $message, $args);
+        return new self(CommandEnvironmentOption::COMPOSER, $command, $message, $args);
     }
 
     public static function packageManager(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironment::PACKAGE_MANAGER, $command, $message, $args);
+        return new self(CommandEnvironmentOption::PACKAGE_MANAGER, $command, $message, $args);
     }
 
     private function validate(): void

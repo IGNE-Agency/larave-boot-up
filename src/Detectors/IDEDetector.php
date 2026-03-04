@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Detectors;
 
-use Igne\LaravelBootstrap\Enums\IDE;
+use Igne\LaravelBootstrap\Enums\IDEOption;
 
 final class IDEDetector
 {
-    private ?IDE $currentIDE = null;
+    private ?IDEOption $currentIDE = null;
 
     public function __construct()
     {
-        $this->currentIDE = IDE::detectCurrent();
+        $this->currentIDE = IDEOption::detectCurrent();
     }
 
     public function isRunningInIDE(): bool
@@ -20,7 +20,7 @@ final class IDEDetector
         return $this->currentIDE !== null;
     }
 
-    public function getIDE(): ?IDE
+    public function getIDE(): ?IDEOption
     {
         return $this->currentIDE;
     }

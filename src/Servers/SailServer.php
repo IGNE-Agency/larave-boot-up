@@ -1,9 +1,9 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Development;
+namespace Igne\LaravelBootstrap\Servers;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Bootstrap\SailBootstrap;
 use Igne\LaravelBootstrap\Managers\DockerManager;
 use Igne\LaravelBootstrap\Managers\SailManager;
@@ -11,7 +11,7 @@ use Igne\LaravelBootstrap\Strategies\PollingStrategy;
 use Illuminate\Support\Facades\File;
 use Illuminate\Console\Command;
 
-final class SailDevEnvironment extends DevEnvironmentRunner
+final class SailServer extends DevServer
 {
     private SailBootstrap $sailBootstrap;
     private SailManager $sailManager;
@@ -50,14 +50,14 @@ final class SailDevEnvironment extends DevEnvironmentRunner
     public function isAvailableOnSystem(): bool
     {
         return
-            File::exists(base_path(ExternalCommandRunner::SAIL->command()))
+            File::exists(base_path(DevServerOption::SAIL->command()))
             && $this->command->isCommandAvailable('docker');
 
     }
 
-    public function ensureRunnerInstalled(): void
+    public function ensureServerInstalled(): void
     {
-        $this->installRunnerIfMissing('docker');
+        $this->installServerIfMissing('docker');
     }
 
     public function isRunning(): bool
@@ -67,7 +67,7 @@ final class SailDevEnvironment extends DevEnvironmentRunner
 
     public function cleanup(): void
     {
-        $sail = ExternalCommandRunner::SAIL->command();
+        $sail = DevServerOption::SAIL->command();
         $this->command->stopAllProcesses();
         $this->command->call("{$sail} down");
         $this->info('Sail server stopped');
@@ -78,9 +78,9 @@ final class SailDevEnvironment extends DevEnvironmentRunner
         return 'http://localhost';
     }
 
-    public function getRunner(): ExternalCommandRunner
+    public function getServer(): DevServerOption
     {
-        return ExternalCommandRunner::SAIL;
+        return DevServerOption::SAIL;
     }
 
     public function openInBrowser(): void

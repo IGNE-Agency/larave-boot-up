@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Managers;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,13 +20,13 @@ final class SailManager
 
     public function isRunning(): bool
     {
-        $sail = ExternalCommandRunner::SAIL->command();
+        $sail = DevServerOption::SAIL->command();
         return $this->commandManager->isCommandRunning("{$sail} ps -q");
     }
 
     public function start(): void
     {
-        $sail = ExternalCommandRunner::SAIL->command();
+        $sail = DevServerOption::SAIL->command();
         $this->commandManager->call("{$sail} up -d");
     }
 

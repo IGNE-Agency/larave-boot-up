@@ -1,16 +1,16 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Development;
+namespace Igne\LaravelBootstrap\Servers;
 
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Illuminate\Console\Command;
 
-final class HerdDevEnvironment extends DevEnvironmentRunner
+final class HerdServer extends DevServer
 {
     public function serve(): int
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
 
         $this->displaySectionHeader('⚡ SETTING UP HERD');
 
@@ -30,17 +30,17 @@ final class HerdDevEnvironment extends DevEnvironmentRunner
 
     public function isAvailableOnSystem(): bool
     {
-        return $this->command->isCommandAvailable(ExternalCommandRunner::HERD->command());
+        return $this->command->isCommandAvailable(DevServerOption::HERD->command());
     }
 
-    public function ensureRunnerInstalled(): void
+    public function ensureServerInstalled(): void
     {
-        $this->installRunnerIfMissing('herd');
+        $this->installServerIfMissing('herd');
     }
 
     public function isRunning(): bool
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
         $checkCommand = OSCommand::CHECK_PROCESS->forProcess($herd)->execute();
 
         return $this->command->isCommandRunning($checkCommand);
@@ -48,7 +48,7 @@ final class HerdDevEnvironment extends DevEnvironmentRunner
 
     public function cleanup(): void
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
         $this->command->stopAllProcesses();
         $this->command->call("{$herd} stop");
         $this->info('Herd server stopped');
@@ -59,14 +59,14 @@ final class HerdDevEnvironment extends DevEnvironmentRunner
         return config('app.url');
     }
 
-    public function getRunner(): ExternalCommandRunner
+    public function getServer(): DevServerOption
     {
-        return ExternalCommandRunner::HERD;
+        return DevServerOption::HERD;
     }
 
     public function openInBrowser(): void
     {
-        $herd = ExternalCommandRunner::HERD->command();
+        $herd = DevServerOption::HERD->command();
         $this->browserLauncher->openWithCommand("{$herd} open");
     }
 }

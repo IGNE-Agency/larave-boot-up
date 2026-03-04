@@ -1,11 +1,11 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Development;
+namespace Igne\LaravelBootstrap\Servers;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Contracts\Serve;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Contracts\Server;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Launchers\BrowserLauncher;
 use Igne\LaravelBootstrap\Managers\ToolInstallationManager;
 use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
@@ -13,7 +13,7 @@ use Igne\LaravelBootstrap\Traits\HasOutputMethods;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 
-abstract class DevEnvironmentRunner implements Serve
+abstract class DevServer implements Server
 {
     use HasOutputMethods;
     protected ExternalCommandManager $command;
@@ -24,19 +24,19 @@ abstract class DevEnvironmentRunner implements Serve
 
     public function __construct(?InterruptibleCommand $command = null)
     {
-        $this->command = new ExternalCommandManager($this->getRunner(), $command?->getOutput());
+        $this->command = new ExternalCommandManager($this->getServer(), $command?->getOutput());
         $this->console = $command;
         $this->configResolver = new ConfigResolver();
         $this->browserLauncher = new BrowserLauncher($this->command, $command?->getOutput());
         $this->installationManager = new ToolInstallationManager($this->command, $this->configResolver, $command?->getOutput());
-        $this->ensureRunnerInstalled();
+        $this->ensureServerInstalled();
     }
 
     abstract public function serve(): int;
 
     abstract public function isAvailableOnSystem(): bool;
 
-    abstract public function ensureRunnerInstalled(): void;
+    abstract public function ensureServerInstalled(): void;
 
     abstract public function isRunning(): bool;
 
@@ -44,7 +44,7 @@ abstract class DevEnvironmentRunner implements Serve
 
     abstract public function getUrl(): string;
 
-    abstract public function getRunner(): ExternalCommandRunner;
+    abstract public function getServer(): DevServerOption;
 
     abstract public function openInBrowser(): void;
 
@@ -69,9 +69,9 @@ abstract class DevEnvironmentRunner implements Serve
         return $this->console;
     }
 
-    protected function installRunnerIfMissing(string $tool): void
+    protected function installServerIfMissing(string $tool): void
     {
-        $this->installationManager->ensureInstalled($tool, $this->getRunner());
+        $this->installationManager->ensureInstalled($tool, $this->getServer());
     }
 
     private function displaySuccessMessage(): void

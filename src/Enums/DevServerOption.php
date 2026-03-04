@@ -2,7 +2,7 @@
 
 namespace Igne\LaravelBootstrap\Enums;
 
-enum ExternalCommandRunner: string
+enum DevServerOption: string
 {
     case HERD = 'herd';
     case SAIL = 'sail';

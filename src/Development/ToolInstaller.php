@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Igne\LaravelBootstrap\Development;
 
 use Igne\LaravelBootstrap\Contracts\InstallsTools;
-use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Igne\LaravelBootstrap\Enums\PackageManager;
-use Igne\LaravelBootstrap\Strategies\InstallationStrategy;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class ToolInstaller implements InstallsTools
 {
-    private ?ExternalCommandRunner $runner = null;
+    private ?DevServerOption $server = null;
     private ShellCommandRunner $shellRunner;
 
     public function __construct()
@@ -21,9 +20,9 @@ final class ToolInstaller implements InstallsTools
         $this->shellRunner = new ShellCommandRunner();
     }
 
-    public function setRunner(?ExternalCommandRunner $runner): self
+    public function setServer(?DevServerOption $server): self
     {
-        $this->runner = $runner;
+        $this->server = $server;
         return $this;
     }
 
@@ -55,7 +54,7 @@ final class ToolInstaller implements InstallsTools
 
     private function getPhpInstallCommand(string $version): string
     {
-        if ($this->runner === ExternalCommandRunner::HERD) {
+        if ($this->server === DevServerOption::HERD) {
             $phpVersion = $version === 'latest' ? 'php' : $version;
             return "herd php:install {$phpVersion} && herd use {$phpVersion}";
         }

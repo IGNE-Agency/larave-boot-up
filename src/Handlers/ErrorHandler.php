@@ -17,21 +17,21 @@ final class ErrorHandler
     ) {
     }
 
-    public function handleBootstrapException(\Throwable $exception, string $runnerName): void
+    public function handleBootstrapException(\Throwable $exception, string $serverName): void
     {
         $this->output->error($exception->getMessage());
 
-        $message = $this->getErrorMessage($exception, $runnerName);
+        $message = $this->getErrorMessage($exception, $serverName);
         $this->output->error($message);
     }
 
-    private function getErrorMessage(\Throwable $exception, string $runnerName): string
+    private function getErrorMessage(\Throwable $exception, string $serverName): string
     {
         return match (get_class($exception)) {
             DependencyCheckException::class => 'Failed on the dependencies',
             DatabaseCheckException::class => 'Failed on the database',
             AppDeploymentException::class => 'Failed to deploy Laravel application',
-            ServeException::class => "Failed to start the server {$runnerName}",
+            ServeException::class => "Failed to start the server {$serverName}",
             default => 'An unexpected error occurred',
         };
     }

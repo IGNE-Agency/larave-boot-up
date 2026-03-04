@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Enums;
 
-enum IDE: string
+enum IDEOption: string
 {
     case VSCODE = 'vscode';
     case CURSOR = 'cursor';

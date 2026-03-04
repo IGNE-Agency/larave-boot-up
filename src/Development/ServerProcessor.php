@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-final class ProcessRunner
+final class ServerProcessor
 {
     public function __construct(
         private readonly ?OutputInterface $output = null,

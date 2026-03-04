@@ -29,7 +29,7 @@ final readonly class InstallFrontendDependencies
 
         $packageManager = $this->getPackageManager($command);
 
-        $this->prepareEnvironment($command, $packageManager);
+        $this->prepareManager($command, $packageManager);
         $this->manageDependencies($command, $packageManager);
         $this->validateBuildWillSucceed($command, $packageManager);
 
@@ -46,7 +46,7 @@ final readonly class InstallFrontendDependencies
         return $command->externalProcessManager->getPackageManager();
     }
 
-    private function prepareEnvironment(InterruptibleCommand $command, PackageManager $packageManager): void
+    private function prepareManager(InterruptibleCommand $command, PackageManager $packageManager): void
     {
         $this->cleanupOtherPackageManagerLockFiles($command, $packageManager);
         $this->updatePackageJsonEngines($command, $packageManager);

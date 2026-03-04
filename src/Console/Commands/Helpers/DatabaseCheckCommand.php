@@ -8,7 +8,7 @@ use Illuminate\Contracts\Console\Isolatable;
 
 final class DatabaseCheckCommand extends InterruptibleCommand implements Isolatable
 {
-    protected $signature = 'check:database {runner : The runner to use (herd, sail, laravel)}';
+    protected $signature = 'check:database {server : The development server to use (herd, sail, laravel)}';
 
     protected $description = 'Make sure the database is correct for development';
 
