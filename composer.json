@@ -45,7 +45,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Igne\\LaravelBootstrap\\BootstrapServiceProvider"
+                "Igne\\LaravelBootstrap\\Providers\\BootstrapServiceProvider"
             ]
         }
     },
