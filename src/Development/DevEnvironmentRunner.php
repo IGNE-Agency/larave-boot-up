@@ -1,25 +1,34 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Runners;
+namespace Igne\LaravelBootstrap\Development;
 
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Serve;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
-use Igne\LaravelBootstrap\Services\ToolInstaller;
+use Igne\LaravelBootstrap\Launchers\BrowserLauncher;
+use Igne\LaravelBootstrap\Managers\ToolInstallationManager;
+use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
+use Igne\LaravelBootstrap\Traits\HasOutputMethods;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 
-abstract class ServeRunner implements Serve
+abstract class DevEnvironmentRunner implements Serve
 {
+    use HasOutputMethods;
     protected ExternalCommandManager $command;
-
+    protected BrowserLauncher $browserLauncher;
+    protected ConfigResolver $configResolver;
+    protected ToolInstallationManager $installationManager;
     public ?InterruptibleCommand $console;
 
     public function __construct(?InterruptibleCommand $command = null)
     {
         $this->command = new ExternalCommandManager($this->getRunner(), $command?->getOutput());
         $this->console = $command;
+        $this->configResolver = new ConfigResolver();
+        $this->browserLauncher = new BrowserLauncher($this->command, $command?->getOutput());
+        $this->installationManager = new ToolInstallationManager($this->command, $this->configResolver, $command?->getOutput());
         $this->ensureRunnerInstalled();
     }
 
@@ -41,13 +50,11 @@ abstract class ServeRunner implements Serve
 
     public function postServe(): int
     {
-        $shouldOpen = config('bootstrap.browser.auto_open', true);
-
-        if ($shouldOpen) {
+        if ($this->configResolver->shouldAutoOpenBrowser()) {
             $this->openInBrowser();
         }
 
-        $this->console?->info("Done! You can now access your application at {$this->getUrl()}");
+        $this->displaySuccessMessage();
 
         return Command::SUCCESS;
     }
@@ -57,22 +64,18 @@ abstract class ServeRunner implements Serve
         return $this->console?->getOutput();
     }
 
+    protected function getOutputHandler(): mixed
+    {
+        return $this->console;
+    }
+
     protected function installRunnerIfMissing(string $tool): void
     {
-        if ($this->command->isCommandAvailable($tool)) {
-            return;
-        }
+        $this->installationManager->ensureInstalled($tool, $this->getRunner());
+    }
 
-        if (!config('bootstrap.auto_install.enabled', true)) {
-            throw new \RuntimeException("{$tool} is not installed. Please install it manually or enable auto_install in config.");
-        }
-
-        $this->console?->warn("{$tool} not found. Installing (required for {$this->getRunner()->value} runner)...");
-
-        $installer = new ToolInstaller();
-        $installer->setRunner($this->getRunner());
-        $installer->install($tool, 'latest', $this->console?->getOutput());
-
-        $this->console?->info("{$tool} installed successfully. Note: You may need to restart your terminal or system for {$tool} to be fully functional.");
+    private function displaySuccessMessage(): void
+    {
+        $this->info("Done! You can now access your application at {$this->getUrl()}");
     }
 }

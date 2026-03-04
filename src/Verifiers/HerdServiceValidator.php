@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\LaravelBootstrap\Services;
+namespace Igne\LaravelBootstrap\Verifiers;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;

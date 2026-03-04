@@ -4,9 +4,11 @@ namespace Igne\LaravelBootstrap\Console;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\PackageManager;
+use Igne\LaravelBootstrap\Verifiers\CommandPresenceVerifier;
+use Igne\LaravelBootstrap\Repositories\ProcessRepository;
+use Igne\LaravelBootstrap\Strategies\PollingStrategy;
 use Closure;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
@@ -14,13 +16,11 @@ use Symfony\Component\Process\Process;
 class ExternalCommandManager
 {
     private ?ExternalCommandRunner $withRunner;
-
     private ?OutputInterface $output;
-
     private bool $isSilent;
-
-    protected array $processes = [];
-
+    private ProcessRepository $processRepository;
+    private CommandPresenceVerifier $presenceVerifier;
+    private PollingStrategy $pollingStrategy;
     private ?PackageManager $packageManager = null;
 
     public function __construct(
@@ -32,6 +32,9 @@ class ExternalCommandManager
         $this->output = $output ?: new StreamOutput(STDOUT);
         $this->isSilent = $isSilent;
         $this->packageManager = $this->resolvePackageManager();
+        $this->processRepository = new ProcessRepository();
+        $this->presenceVerifier = new CommandPresenceVerifier();
+        $this->pollingStrategy = new PollingStrategy();
     }
 
     public function create(?bool $silent = null): ExternalCommand
@@ -41,30 +44,22 @@ class ExternalCommandManager
 
     public function stopAllProcesses(): void
     {
-        foreach ($this->processes as $process) {
-            if ($process->isRunning()) {
-                $process->stop();
-            }
-        }
+        $this->processRepository->stopAll();
     }
 
     public function isCommandAvailable(string $command): bool
     {
-        return $this->callSilent([...Arr::wrap($command), '-v'])->isSuccessful();
+        return $this->presenceVerifier->isAvailable($command);
     }
 
     public function isCommandRunning(string $command): bool
     {
-        $result = $this->callSilent($command);
-
-        return $result->isSuccessful() && Str::of($result->getOutput())->trim()->isNotEmpty();
+        return $this->presenceVerifier->isRunning($command);
     }
 
     public function lastProcess(): ?Process
     {
-        $lastProcess = end($this->processes);
-
-        return $lastProcess ?: null;
+        return $this->processRepository->getLastProcess();
     }
 
     public function call(string|array $command, array $options = [], ?bool $silent = null, ?int $timeout = null): Process
@@ -75,10 +70,8 @@ class ExternalCommandManager
         }
         $instance->call($command, $options);
         $process = $instance->process();
-        if ($process?->isRunning()) {
-            $this->processes[] = $process;
-        }
-        $this->cleanupFinishedProcesses();
+        $this->processRepository->register($process);
+        $this->processRepository->cleanup();
 
         return $process;
     }
@@ -120,36 +113,15 @@ class ExternalCommandManager
         ?Closure $onInterrupt = null,
         ?Closure $isInterrupted = null
     ): void {
-        $start = microtime(true);
-
-        $onProgress ??= fn() => null;
-        $onInterrupt ??= fn() => null;
-
-        while ((microtime(true) - $start) < $timeoutSeconds) {
-            if ($isInterrupted && $isInterrupted()) {
-                $onInterrupt();
-
-                return;
-            }
-
-            if ($check()) {
-                $onSuccess();
-
-                return;
-            }
-
-            $onProgress();
-            usleep($intervalMs * 1000);
-        }
-
-        $onFailure($timeoutSeconds);
-    }
-
-    protected function cleanupFinishedProcesses(): void
-    {
-        $this->processes = array_filter(
-            $this->processes,
-            fn($process) => $process->isRunning()
+        $this->pollingStrategy->waitFor(
+            $check,
+            $onSuccess,
+            $onFailure,
+            $onProgress,
+            $timeoutSeconds,
+            $intervalMs,
+            $onInterrupt,
+            $isInterrupted
         );
     }
 

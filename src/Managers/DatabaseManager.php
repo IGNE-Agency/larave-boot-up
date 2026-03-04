@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\LaravelBootstrap\Services;
+namespace Igne\LaravelBootstrap\Managers;
 
 use Igne\LaravelBootstrap\Contracts\ManagesDatabase;
 use Illuminate\Support\Facades\DB;

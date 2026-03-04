@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Traits;
 
+use Igne\LaravelBootstrap\Detectors\IDEDetector;
 use Igne\LaravelBootstrap\Enums\OSCommand;
-use Igne\LaravelBootstrap\Services\IDEDetector;
 
 trait OpensTerminalCommands
 {

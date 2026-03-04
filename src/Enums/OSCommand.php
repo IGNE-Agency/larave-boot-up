@@ -8,6 +8,7 @@ enum OSCommand: string
 {
     case KILL_PHP_ARTISAN = 'kill_php_artisan';
     case CHECK_PROCESS = 'check_process';
+    case KILL_PROCESS = 'kill_process';
     case OPEN_TERMINAL = 'open_terminal';
     case START_DOCKER = 'start_docker';
     case INSTALL_PHP = 'install_php';
@@ -24,6 +25,11 @@ enum OSCommand: string
     public function forProcess(string $process): OSCommandBuilder
     {
         return (new OSCommandBuilder($this))->forProcess($process);
+    }
+
+    public function forPid(int $pid): OSCommandBuilder
+    {
+        return (new OSCommandBuilder($this))->forPid($pid);
     }
 
     public function withCommand(string $command): OSCommandBuilder

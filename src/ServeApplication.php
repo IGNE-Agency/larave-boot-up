@@ -6,16 +6,16 @@ use Igne\LaravelBootstrap\Contracts\Serve;
 
 final class ServeApplication
 {
-    public function __construct(protected Serve $runner)
+    public function __construct(protected Serve $environment)
     {
     }
 
     public function boot(): void
     {
         app(\Illuminate\Pipeline\Pipeline::class)
-            ->send($this->runner)
+            ->send($this->environment)
             ->through([
-                \Igne\LaravelBootstrap\Pipelines\Bootstrap\ServeRunner::class,
+                \Igne\LaravelBootstrap\Pipelines\Bootstrap\StartDevEnvironment::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\CheckDependencies::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\EnsureLocalEnvironment::class,
                 \Igne\LaravelBootstrap\Pipelines\Bootstrap\CheckDatabase::class,

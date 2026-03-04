@@ -7,7 +7,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Database;
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
-use Igne\LaravelBootstrap\Services\DatabaseManager;
+use Igne\LaravelBootstrap\Managers\DatabaseManager;
 
 use function Laravel\Prompts\confirm;
 

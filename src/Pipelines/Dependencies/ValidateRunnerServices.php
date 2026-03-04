@@ -7,7 +7,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
-use Igne\LaravelBootstrap\Services\HerdServiceValidator;
+use Igne\LaravelBootstrap\Verifiers\HerdServiceValidator;
 
 final readonly class ValidateRunnerServices
 {

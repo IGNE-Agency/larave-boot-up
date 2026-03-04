@@ -10,6 +10,7 @@ final class OSCommandBuilder
 {
     private string|null $command = null;
     private ?string $process = null;
+    private ?int $pid = null;
     private ?string $version = null;
     private ?string $url = null;
 
@@ -32,6 +33,12 @@ final class OSCommandBuilder
         return $this;
     }
 
+    public function forPid(int $pid): self
+    {
+        $this->pid = $pid;
+        return $this;
+    }
+
     public function forVersion(string $version = 'latest'): self
     {
         $this->version = $version;
@@ -49,6 +56,7 @@ final class OSCommandBuilder
         return match ($this->osCommand) {
             OSCommand::KILL_PHP_ARTISAN => $this->killPhpArtisan(),
             OSCommand::CHECK_PROCESS => $this->checkProcess($this->getProcess()),
+            OSCommand::KILL_PROCESS => $this->killProcess($this->getPid()),
             OSCommand::OPEN_TERMINAL => $this->openTerminal($this->getCommand()),
             OSCommand::OPEN_BROWSER => $this->openBrowser($this->getUrl()),
             OSCommand::START_DOCKER => $this->startDocker(),
@@ -86,6 +94,11 @@ final class OSCommandBuilder
         return $this->url ?? '';
     }
 
+    private function getPid(): int
+    {
+        return $this->pid ?? 0;
+    }
+
     private function isLatestVersion(string $version): bool
     {
         return $version === 'latest';
@@ -106,6 +119,18 @@ final class OSCommandBuilder
         return match (PHP_OS_FAMILY) {
             'Windows' => "tasklist /FI \"IMAGENAME eq {$process}.exe\" /NH",
             default => "pgrep -f {$process}",
+        };
+    }
+
+    private function killProcess(int $pid): string
+    {
+        if ($pid <= 0) {
+            return '';
+        }
+
+        return match (PHP_OS_FAMILY) {
+            'Windows' => "taskkill /PID {$pid} /F 2>NUL",
+            default => "kill -TERM -{$pid} 2>/dev/null || kill -TERM {$pid} 2>/dev/null",
         };
     }
 

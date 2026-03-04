@@ -1,16 +1,16 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Runners;
+namespace Igne\LaravelBootstrap\Development;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Illuminate\Console\Command;
 
-final class ServeLaravelRunner extends ServeRunner
+final class LaravelDevEnvironment extends DevEnvironmentRunner
 {
     public function serve(): int
     {
-        $this->console?->info('Starting Laravel development server...');
+        $this->displaySectionHeader('🚀 STARTING LARAVEL SERVER');
 
         return Command::SUCCESS;
     }
@@ -39,7 +39,7 @@ final class ServeLaravelRunner extends ServeRunner
     {
         $this->command->stopAllProcesses();
         $this->command->callSilent(OSCommand::KILL_PHP_ARTISAN->execute());
-        $this->console?->info('Laravel server stopped');
+        $this->info('Laravel server stopped');
     }
 
     public function getUrl(): string
@@ -54,11 +54,6 @@ final class ServeLaravelRunner extends ServeRunner
 
     public function openInBrowser(): void
     {
-        if (OSCommand::OPEN_BROWSER->canExecute()) {
-            $url = $this->getUrl();
-            $this->command->callSilent(OSCommand::OPEN_BROWSER->forUrl($url)->execute());
-        } else {
-            $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
-        }
+        $this->browserLauncher->openUrl($this->getUrl());
     }
 }

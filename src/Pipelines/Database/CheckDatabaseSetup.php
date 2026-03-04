@@ -8,7 +8,7 @@ use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
-use Igne\LaravelBootstrap\Services\DatabaseManager;
+use Igne\LaravelBootstrap\Managers\DatabaseManager;
 
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\select;

@@ -7,8 +7,8 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
-use Igne\LaravelBootstrap\Services\ToolInstaller;
-use Igne\LaravelBootstrap\Services\VersionChecker;
+use Igne\LaravelBootstrap\Development\ToolInstaller;
+use Igne\LaravelBootstrap\Verifiers\VersionChecker;
 use Illuminate\Support\Collection;
 
 final readonly class ValidateTools

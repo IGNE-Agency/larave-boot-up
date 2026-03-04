@@ -1,28 +1,24 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Runners;
+namespace Igne\LaravelBootstrap\Development;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
 use Igne\LaravelBootstrap\Enums\OSCommand;
 use Illuminate\Console\Command;
 
-final class ServeHerdRunner extends ServeRunner
+final class HerdDevEnvironment extends DevEnvironmentRunner
 {
     public function serve(): int
     {
         $herd = ExternalCommandRunner::HERD->command();
 
-        $this->console?->newLine();
-        $this->console?->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        $this->console?->info('⚡ SETTING UP HERD');
-        $this->console?->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        $this->console?->newLine();
+        $this->displaySectionHeader('⚡ SETTING UP HERD');
 
         $this->command->callSilent("{$herd} link");
-        $this->console?->info('✓ Project linked to Herd');
+        $this->info('✓ Project linked to Herd');
 
         $this->command->callSilent("{$herd} secure");
-        $this->console?->info('✓ HTTPS certificate configured');
+        $this->info('✓ HTTPS certificate configured');
 
         return Command::SUCCESS;
     }
@@ -55,7 +51,7 @@ final class ServeHerdRunner extends ServeRunner
         $herd = ExternalCommandRunner::HERD->command();
         $this->command->stopAllProcesses();
         $this->command->call("{$herd} stop");
-        $this->console?->info('Herd server stopped');
+        $this->info('Herd server stopped');
     }
 
     public function getUrl(): string
@@ -71,11 +67,6 @@ final class ServeHerdRunner extends ServeRunner
     public function openInBrowser(): void
     {
         $herd = ExternalCommandRunner::HERD->command();
-
-        if (OSCommand::OPEN_BROWSER->canExecute()) {
-            $this->command->call("{$herd} open");
-        } else {
-            $this->console?->warn('No browser detected. Please open ' . $this->getUrl() . ' manually.');
-        }
+        $this->browserLauncher->openWithCommand("{$herd} open");
     }
 }

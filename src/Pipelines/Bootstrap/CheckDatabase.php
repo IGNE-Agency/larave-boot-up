@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Artisan;
 
 final readonly class CheckDatabase
 {
-    public function handle(Serve $runner, Closure $next): Serve
+    public function handle(Serve $environment, Closure $next): Serve
     {
         Artisan::call('check:database', [
-            'runner' => $runner->getRunner(),
-        ], $runner->getOutput());
+            'runner' => $environment->getRunner(),
+        ], $environment->getOutput());
 
-        return $next($runner);
+        return $next($environment);
     }
 }

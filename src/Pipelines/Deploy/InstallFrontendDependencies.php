@@ -8,7 +8,7 @@ use Closure;
 use Exception;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\PackageManager;
-use Igne\LaravelBootstrap\Services\PackageJsonManager;
+use Igne\LaravelBootstrap\Managers\PackageJsonManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 

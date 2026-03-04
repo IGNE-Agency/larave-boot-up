@@ -3,28 +3,20 @@
 namespace Igne\LaravelBootstrap\Console;
 
 use Igne\LaravelBootstrap\Enums\ExternalCommandRunner;
-use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Igne\LaravelBootstrap\Resolvers\CommandResolver;
+use Igne\LaravelBootstrap\Development\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 final class ExternalCommand
 {
-    use BuildsCommandOptions;
     private Process $process;
-
     private array $command = [];
-
-    private ?ExternalCommandRunner $withRunner;
-
-    private ?OutputInterface $output;
-
+    private CommandResolver $resolver;
+    private ProcessRunner $runner;
+    private OutputInterface $output;
     private ?int $timeout = null;
-
     private bool $isSilent;
 
     public function __construct(
@@ -32,15 +24,22 @@ final class ExternalCommand
         ?OutputInterface $output = null,
         bool $isSilent = false
     ) {
-        $this->withRunner = $withRunner;
         $this->output = $output ?: new StreamOutput(STDOUT);
         $this->isSilent = $isSilent;
         $this->timeout = null;
+        $this->resolver = new CommandResolver(
+            new \Igne\LaravelBootstrap\Parsers\CommandParser(),
+            $withRunner
+        );
+        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
     }
 
     public function withRunner(?ExternalCommandRunner $withRunner = null): self
     {
-        $this->withRunner = $withRunner;
+        $this->resolver = new CommandResolver(
+            new \Igne\LaravelBootstrap\Parsers\CommandParser(),
+            $withRunner
+        );
 
         return $this;
     }
@@ -48,6 +47,7 @@ final class ExternalCommand
     public function silent(bool $isSilent = true): self
     {
         $this->isSilent = $isSilent;
+        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
 
         return $this;
     }
@@ -55,6 +55,7 @@ final class ExternalCommand
     public function timeout(int $timeout): self
     {
         $this->timeout = $timeout;
+        $this->runner = new ProcessRunner($this->output, $this->isSilent, $this->timeout);
 
         return $this;
     }
@@ -68,16 +69,7 @@ final class ExternalCommand
 
     public function run(): int
     {
-        $this->process = new Process($this->command, base_path(), null, null, $this->timeout);
-        $this->process->run(function ($type, $buffer) {
-            if (!$this->isSilent) {
-                $this->output->write($buffer);
-            }
-        });
-
-        if (!$this->isSilent && !$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
+        $this->process = $this->runner->execute($this->command, base_path());
 
         return $this->process->getExitCode();
     }
@@ -89,30 +81,21 @@ final class ExternalCommand
 
     public function output(): ?string
     {
-        if (!$this->process) {
+        if (!isset($this->process)) {
             return null;
         }
 
-        return $this->process->isSuccessful()
-            ? $this->process->getOutput()
-            : $this->process->getErrorOutput();
+        return $this->runner->getOutput($this->process);
     }
 
     public function isSuccessful(): bool
     {
-        return $this->process?->isSuccessful() ?? false;
+        return isset($this->process) && $this->runner->isSuccessful($this->process);
     }
 
     public function resolveCommand(string|array $command, array $options = []): array
     {
-        return collect($command)
-            ->pipe(fn($input) => $this->normalizeCommand($input))
-            ->pipe(fn($commands) => $this->replaceCommands($commands))
-            ->pipe(fn($commands) => $this->prefixCommands($commands))
-            ->pipe(fn($commands) => $commands->merge($this->buildOptions($options)))
-            ->filter()
-            ->values()
-            ->all();
+        return $this->resolver->resolve($command, $options);
     }
 
     protected function prepare(string|array $command, array $options = []): static
@@ -122,44 +105,4 @@ final class ExternalCommand
         return $this;
     }
 
-    protected function normalizeCommand($command): Collection
-    {
-        return collect(Arr::wrap($command))
-            ->flatten()
-            ->flatMap(
-                fn($item) => \is_string($item)
-                ? Str::of($item)->trim()->explode(' ')
-                : Arr::wrap($item)
-            )
-            ->filter()
-            ->values();
-    }
-
-
-    protected function replaceCommands(Collection $commands): Collection
-    {
-        if (!$this->withRunner) {
-            return $commands;
-        }
-
-        $replace = $this->withRunner->replaces();
-
-        return $commands->map(fn($command) => $replace[$command] ?? $command);
-    }
-
-    protected function prefixCommands(Collection $commands): Collection
-    {
-        if (!$this->withRunner) {
-            return $commands;
-        }
-
-        $prefixable = $this->withRunner->prefixes();
-        $runnerCommand = $this->withRunner->command();
-
-        return $commands->flatMap(
-            callback: fn($command) => \in_array($command, $prefixable, true)
-            ? [$runnerCommand, $command]
-            : [$command]
-        );
-    }
 }

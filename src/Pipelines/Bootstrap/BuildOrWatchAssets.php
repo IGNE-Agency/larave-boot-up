@@ -7,7 +7,8 @@ namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 use Closure;
 use Igne\LaravelBootstrap\Contracts\Serve;
 use Igne\LaravelBootstrap\Enums\PackageManager;
-use Igne\LaravelBootstrap\Services\PackageJsonManager;
+use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
+use Igne\LaravelBootstrap\Managers\PackageJsonManager;
 use Igne\LaravelBootstrap\Traits\OpensTerminalCommands;
 
 final readonly class BuildOrWatchAssets
@@ -15,25 +16,24 @@ final readonly class BuildOrWatchAssets
     use OpensTerminalCommands;
 
     public function __construct(
-        private PackageJsonManager $packageJsonManager
+        private PackageJsonManager $packageJsonManager,
+        private ConfigResolver $configResolver
     ) {
     }
 
-    public function handle(Serve $runner, Closure $next): Serve
+    public function handle(Serve $environment, Closure $next): Serve
     {
         if ($this->shouldSkipAssetBuilding()) {
-            return $next($runner);
+            return $next($environment);
         }
 
-        $separateTerminal = config('bootstrap.assets.separate_terminal', true);
-
-        if ($separateTerminal && $this->canOpenTerminal()) {
-            $this->buildOrWatchInSeparateTerminal($runner);
+        if ($this->configResolver->shouldUseSeparateTerminal() && $this->canOpenTerminal()) {
+            $this->buildOrWatchInSeparateTerminal();
         } else {
-            $this->buildAssetsSynchronously($runner);
+            $this->buildAssetsSynchronously($environment);
         }
 
-        return $next($runner);
+        return $next($environment);
     }
 
     private function shouldSkipAssetBuilding(): bool
@@ -41,7 +41,7 @@ final readonly class BuildOrWatchAssets
         return !$this->packageJsonManager->exists();
     }
 
-    private function buildOrWatchInSeparateTerminal(Serve $runner): void
+    private function buildOrWatchInSeparateTerminal(): void
     {
         $packageManager = $this->getPackageManager();
         $command = $this->getAssetCommand($packageManager);
@@ -49,12 +49,12 @@ final readonly class BuildOrWatchAssets
         $this->executeInSeparateTerminal("{$packageManager->value} {$command}");
     }
 
-    private function buildAssetsSynchronously(Serve $runner): void
+    private function buildAssetsSynchronously(Serve $environment): void
     {
         $packageManager = $this->getPackageManager();
         $command = $packageManager->buildCommand();
 
-        $runner->getOutput()?->info('Building frontend assets...');
+        $environment->getOutput()?->info('Building frontend assets...');
 
         shell_exec("{$packageManager->value} {$command}");
     }
@@ -67,10 +67,7 @@ final readonly class BuildOrWatchAssets
 
     private function getAssetCommand(PackageManager $packageManager): string
     {
-        $watchInDev = config('bootstrap.assets.watch_in_dev', true);
-        $isDev = app()->environment('local', 'development');
-
-        if ($watchInDev && $isDev) {
+        if ($this->configResolver->shouldWatchAssets()) {
             return $packageManager->devCommand();
         }
 

@@ -9,10 +9,10 @@ use Igne\LaravelBootstrap\Contracts\Serve;
 
 final readonly class PostServeActions
 {
-    public function handle(Serve $runner, Closure $next): Serve
+    public function handle(Serve $environment, Closure $next): Serve
     {
-        $runner->postServe();
+        $environment->postServe();
 
-        return $next($runner);
+        return $next($environment);
     }
 }

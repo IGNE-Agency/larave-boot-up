@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Artisan;
 
 final readonly class CheckDependencies
 {
-    public function handle(Serve $runner, Closure $next): Serve
+    public function handle(Serve $environment, Closure $next): Serve
     {
         Artisan::call('check:dependencies', [
-            'runner' => $runner->getRunner()->value,
-        ], $runner->getOutput());
+            'runner' => $environment->getRunner()->value,
+        ], $environment->getOutput());
 
-        return $next($runner);
+        return $next($environment);
     }
 }

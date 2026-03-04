@@ -1,6 +1,6 @@
 <?php
 
-namespace Igne\LaravelBootstrap;
+namespace Igne\LaravelBootstrap\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

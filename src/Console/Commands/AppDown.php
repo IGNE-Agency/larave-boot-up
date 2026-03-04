@@ -3,12 +3,13 @@
 namespace Igne\LaravelBootstrap\Console\Commands;
 
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Runners\ServeHerdRunner;
-use Igne\LaravelBootstrap\Runners\ServeSailRunner;
+use Igne\LaravelBootstrap\Development\HerdDevEnvironment;
+use Igne\LaravelBootstrap\Development\SailDevEnvironment;
+use Igne\LaravelBootstrap\Terminators\BackgroundProcessTerminator;
+use Igne\LaravelBootstrap\Handlers\RunnerShutdownHandler;
+use Igne\LaravelBootstrap\Confirmations\ShutdownConfirmation;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
-
-use function Laravel\Prompts\confirm;
 
 final class AppDown extends InterruptibleCommand implements Isolatable
 {
@@ -18,37 +19,10 @@ final class AppDown extends InterruptibleCommand implements Isolatable
 
     public function handleWithInterrupts(): int
     {
-        $this->info('Stopping application environment...');
-        $this->newLine(1);
-
-        $herdRunner = new ServeHerdRunner($this);
-        $sailRunner = new ServeSailRunner($this);
-
-        if ($herdRunner->isRunning()) {
-            $shouldStopRunner = $this->shouldStopRunner('Herd');
-
-            if ($shouldStopRunner) {
-                $this->info('Stopping Laravel Herd...');
-                $herdRunner->cleanup();
-            } else {
-                $this->info('Stopping processes but keeping Herd running...');
-                $this->externalProcessManager->stopAllProcesses();
-            }
-        }
-
-        if ($sailRunner->isRunning()) {
-            $shouldStopRunner = $this->shouldStopRunner('Sail');
-
-            if ($shouldStopRunner) {
-                $this->info('Stopping Sail containers...');
-                $sailRunner->cleanup();
-            } else {
-                $this->info('Stopping processes but keeping Sail running...');
-                $this->externalProcessManager->stopAllProcesses();
-            }
-        }
-
-        $this->info('Application environment has been stopped.');
+        $this->displayStartMessage();
+        $this->stopBackgroundProcesses();
+        $this->shutdownDevEnvironments();
+        $this->displayCompletionMessage();
 
         return Command::SUCCESS;
     }
@@ -60,21 +34,63 @@ final class AppDown extends InterruptibleCommand implements Isolatable
         $this->info('Exit completed gracefully.');
     }
 
-    protected function shouldStopRunner(string $runnerName): bool
+    private function displayStartMessage(): void
     {
-        $shouldPrompt = config('bootstrap.shutdown.prompt_runner_stop', true);
-        $defaultStop = config('bootstrap.shutdown.default_stop_runner', false);
+        $this->info('Stopping application environment...');
+        $this->newLine(1);
+    }
 
-        if (!$shouldPrompt) {
-            return $defaultStop;
+    private function stopBackgroundProcesses(): void
+    {
+        $processTerminator = new BackgroundProcessTerminator(
+            $this->resolveProcessTracker()
+        );
+
+        $processTerminator->stopAll($this->output);
+    }
+
+    private function shutdownDevEnvironments(): void
+    {
+        $this->shutdownDevEnvironment(new HerdDevEnvironment($this), 'Herd');
+        $this->shutdownDevEnvironment(new SailDevEnvironment($this), 'Sail');
+    }
+
+    private function shutdownDevEnvironment(mixed $environment, string $environmentName): void
+    {
+        if (!$environment->isRunning()) {
+            return;
         }
 
-        return confirm(
-            label: "Do you want to stop {$runnerName} itself?",
-            default: $defaultStop,
-            yes: 'Stop runner',
-            no: 'Keep runner (only stop processes)',
-            hint: 'Choose whether to fully stop the runner or just the processes'
+        $confirmation = new ShutdownConfirmation();
+        $shouldStopEnvironment = $confirmation->shouldStopRunner($environmentName);
+
+        $this->displayEnvironmentAction($environmentName, $shouldStopEnvironment);
+
+        $shutdownHandler = new RunnerShutdownHandler($this->externalProcessManager);
+        $shutdownHandler->handleShutdown($environment, $shouldStopEnvironment, $environmentName);
+    }
+
+    private function displayEnvironmentAction(string $environmentName, bool $shouldStop): void
+    {
+        if ($shouldStop) {
+            $this->info("Stopping {$environmentName}...");
+            return;
+        }
+
+        $this->info("Stopping processes but keeping {$environmentName} running...");
+    }
+
+    private function displayCompletionMessage(): void
+    {
+        $this->info('Application environment has been stopped.');
+    }
+
+    private function resolveProcessTracker(): \Igne\LaravelBootstrap\Managers\ProcessTrackingManager
+    {
+        return new \Igne\LaravelBootstrap\Managers\ProcessTrackingManager(
+            new \Igne\LaravelBootstrap\Repositories\ProcessFileRepository(),
+            new \Igne\LaravelBootstrap\Managers\ProcessManager(),
+            new \Igne\LaravelBootstrap\Parsers\CommandExtractor()
         );
     }
 }
