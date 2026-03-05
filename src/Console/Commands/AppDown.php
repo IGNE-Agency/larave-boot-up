@@ -2,12 +2,12 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands;
 
+use Igne\LaravelBootstrap\Confirmations\ShutdownConfirmation;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Handlers\ServerShutdownHandler;
 use Igne\LaravelBootstrap\Servers\HerdServer;
 use Igne\LaravelBootstrap\Servers\SailServer;
 use Igne\LaravelBootstrap\Terminators\BackgroundProcessTerminator;
-use Igne\LaravelBootstrap\Handlers\ServerShutdownHandler;
-use Igne\LaravelBootstrap\Confirmations\ShutdownConfirmation;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
@@ -57,11 +57,11 @@ final class AppDown extends InterruptibleCommand implements Isolatable
 
     private function shutdownDevServer(mixed $server, string $serverName): void
     {
-        if (!$server->isRunning()) {
+        if (! $server->isRunning()) {
             return;
         }
 
-        $confirmation = new ShutdownConfirmation();
+        $confirmation = new ShutdownConfirmation;
         $shouldStopServer = $confirmation->shouldStopServer($serverName);
 
         $this->displayServerAction($serverName, $shouldStopServer);
@@ -74,6 +74,7 @@ final class AppDown extends InterruptibleCommand implements Isolatable
     {
         if ($shouldStop) {
             $this->info("Stopping {$serverName}...");
+
             return;
         }
 
@@ -88,9 +89,9 @@ final class AppDown extends InterruptibleCommand implements Isolatable
     private function resolveProcessTracker(): \Igne\LaravelBootstrap\Managers\ProcessTrackingManager
     {
         return new \Igne\LaravelBootstrap\Managers\ProcessTrackingManager(
-            new \Igne\LaravelBootstrap\Repositories\ProcessFileRepository(),
-            new \Igne\LaravelBootstrap\Managers\ProcessManager(),
-            new \Igne\LaravelBootstrap\Parsers\CommandExtractor()
+            new \Igne\LaravelBootstrap\Repositories\ProcessFileRepository,
+            new \Igne\LaravelBootstrap\Managers\ProcessManager,
+            new \Igne\LaravelBootstrap\Parsers\CommandExtractor
         );
     }
 }

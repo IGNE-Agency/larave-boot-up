@@ -23,7 +23,7 @@ final readonly class HerdServiceValidator
 
     private function stopValetIfRunning(InterruptibleCommand $command): void
     {
-        if (!$this->isValetRunning($command)) {
+        if (! $this->isValetRunning($command)) {
             return;
         }
 
@@ -34,7 +34,7 @@ final readonly class HerdServiceValidator
 
     private function isValetRunning(InterruptibleCommand $command): bool
     {
-        if (!$command->externalProcessManager->isCommandAvailable('valet')) {
+        if (! $command->externalProcessManager->isCommandAvailable('valet')) {
             return false;
         }
 
@@ -70,16 +70,17 @@ final readonly class HerdServiceValidator
     {
         if ($this->areAllHerdServicesRunning($command)) {
             $command->info('Herd services are already running correctly.');
+
             return;
         }
 
         $this->startHerdServices($command);
 
-        if (!$this->areAllHerdServicesRunning($command)) {
+        if (! $this->areAllHerdServicesRunning($command)) {
             $command->warn('Herd services not running correctly. Attempting restart...');
             $this->restartHerdServices($command);
 
-            if (!$this->areAllHerdServicesRunning($command)) {
+            if (! $this->areAllHerdServicesRunning($command)) {
                 throw new DependencyCheckException(
                     'Failed to start Herd services correctly. Please run "herd restart" manually and try again.'
                 );
@@ -95,7 +96,7 @@ final readonly class HerdServiceValidator
 
         foreach ($requiredProcesses as $process) {
             $checkCommand = OSCommand::CHECK_PROCESS->forProcess($process)->execute();
-            if (!$command->externalProcessManager->isCommandRunning($checkCommand)) {
+            if (! $command->externalProcessManager->isCommandRunning($checkCommand)) {
                 return false;
             }
         }

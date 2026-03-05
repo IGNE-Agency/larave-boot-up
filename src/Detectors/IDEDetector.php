@@ -27,7 +27,7 @@ final class IDEDetector
 
     public function getIDETerminalCommand(string $command): ?string
     {
-        if (!$this->currentIDE) {
+        if (! $this->currentIDE) {
             return null;
         }
 

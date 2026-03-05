@@ -50,7 +50,7 @@ final class PackageJsonManager
 
     private function encode(array $packageJson): string
     {
-        return json_encode($packageJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        return json_encode($packageJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";
     }
 
     private function buildEnginesConfig(PackageManager $packageManager, array $engines): array
@@ -66,7 +66,7 @@ final class PackageJsonManager
         $version = $this->getPackageManagerVersion($packageManager);
 
         return collect(PackageManager::cases())
-            ->mapWithKeys(fn(PackageManager $manager): array => [
+            ->mapWithKeys(fn (PackageManager $manager): array => [
                 $manager->value => $this->getEngineConstraint($manager, $packageManager, $version),
             ])
             ->all();

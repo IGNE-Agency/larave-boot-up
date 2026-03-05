@@ -2,9 +2,9 @@
 
 namespace Igne\LaravelBootstrap\Console;
 
+use Igne\LaravelBootstrap\Development\ServerProcessor;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Resolvers\CommandResolver;
-use Igne\LaravelBootstrap\Development\ServerProcessor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
@@ -28,7 +28,7 @@ final class ExternalCommand
         $this->isSilent = $isSilent;
         $this->timeout = null;
         $this->resolver = new CommandResolver(
-            new \Igne\LaravelBootstrap\Parsers\CommandParser(),
+            new \Igne\LaravelBootstrap\Parsers\CommandParser,
             $server
         );
         $this->serverProcessor = new ServerProcessor($this->output, $this->isSilent, $this->timeout);
@@ -37,7 +37,7 @@ final class ExternalCommand
     public function withServer(?DevServerOption $server = null): self
     {
         $this->resolver = new CommandResolver(
-            new \Igne\LaravelBootstrap\Parsers\CommandParser(),
+            new \Igne\LaravelBootstrap\Parsers\CommandParser,
             $server
         );
 
@@ -81,7 +81,7 @@ final class ExternalCommand
 
     public function output(): ?string
     {
-        if (!isset($this->process)) {
+        if (! isset($this->process)) {
             return null;
         }
 
@@ -104,5 +104,4 @@ final class ExternalCommand
 
         return $this;
     }
-
 }

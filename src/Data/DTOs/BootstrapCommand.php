@@ -11,6 +11,7 @@ use InvalidArgumentException;
 final readonly class BootstrapCommand
 {
     use BuildsCommandOptions;
+
     public function __construct(
         public CommandEnvironmentOption $environment,
         public string $command,
@@ -69,7 +70,7 @@ final readonly class BootstrapCommand
         ];
 
         foreach ($dangerousPatterns as $pattern) {
-            if (preg_match('/' . preg_quote($pattern, '/') . '/i', $this->command)) {
+            if (preg_match('/'.preg_quote($pattern, '/').'/i', $this->command)) {
                 throw new InvalidArgumentException(
                     "Command '{$this->command}' contains potentially dangerous pattern: {$pattern}"
                 );
@@ -86,11 +87,11 @@ final readonly class BootstrapCommand
     private function validateArguments(): void
     {
         foreach ($this->args as $key => $value) {
-            if (!\is_string($key)) {
+            if (! \is_string($key)) {
                 throw new InvalidArgumentException('All argument keys must be strings.');
             }
 
-            if (!\is_string($value) && !\is_numeric($value) && !\is_bool($value) && !\is_array($value)) {
+            if (! \is_string($value) && ! \is_numeric($value) && ! \is_bool($value) && ! \is_array($value)) {
                 throw new InvalidArgumentException(
                     "Argument '{$key}' has invalid type. Only string, numeric, boolean, or array values are allowed."
                 );
@@ -98,7 +99,7 @@ final readonly class BootstrapCommand
 
             if (\is_array($value)) {
                 foreach ($value as $item) {
-                    if (!\is_string($item) && !\is_numeric($item)) {
+                    if (! \is_string($item) && ! \is_numeric($item)) {
                         throw new InvalidArgumentException(
                             "Array argument '{$key}' contains invalid items. Only strings and numbers are allowed."
                         );
@@ -112,6 +113,6 @@ final readonly class BootstrapCommand
     {
         $options = $this->buildOptions($this->args);
 
-        return trim($this->command . ' ' . implode(' ', $options));
+        return trim($this->command.' '.implode(' ', $options));
     }
 }

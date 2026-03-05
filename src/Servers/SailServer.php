@@ -2,14 +2,14 @@
 
 namespace Igne\LaravelBootstrap\Servers;
 
+use Igne\LaravelBootstrap\Bootstrap\SailBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
-use Igne\LaravelBootstrap\Bootstrap\SailBootstrap;
 use Igne\LaravelBootstrap\Managers\DockerManager;
 use Igne\LaravelBootstrap\Managers\SailManager;
 use Igne\LaravelBootstrap\Strategies\PollingStrategy;
-use Illuminate\Support\Facades\File;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 final class SailServer extends DevServer
 {
@@ -25,7 +25,7 @@ final class SailServer extends DevServer
         $this->sailBootstrap = new SailBootstrap(
             $this->sailManager,
             $this->dockerManager,
-            new PollingStrategy(),
+            new PollingStrategy,
             $command?->getOutput()
         );
     }
@@ -52,7 +52,6 @@ final class SailServer extends DevServer
         return
             File::exists(base_path(DevServerOption::SAIL->command()))
             && $this->command->isCommandAvailable('docker');
-
     }
 
     public function ensureServerInstalled(): void

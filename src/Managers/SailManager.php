@@ -15,12 +15,12 @@ final class SailManager
     public function __construct(
         private readonly ExternalCommandManager $commandManager,
         private readonly ?OutputInterface $output = null
-    ) {
-    }
+    ) {}
 
     public function isRunning(): bool
     {
         $sail = DevServerOption::SAIL->command();
+
         return $this->commandManager->isCommandRunning("{$sail} ps -q");
     }
 

@@ -10,7 +10,7 @@ final class ShutdownConfirmation
 {
     public function shouldStopServer(string $serverName): bool
     {
-        if (!$this->shouldPrompt()) {
+        if (! $this->shouldPrompt()) {
             return $this->getDefaultBehavior();
         }
 

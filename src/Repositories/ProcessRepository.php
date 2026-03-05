@@ -30,7 +30,7 @@ final class ProcessRepository
     {
         $this->processes = array_filter(
             $this->processes,
-            fn($process) => $process->isRunning()
+            fn ($process) => $process->isRunning()
         );
     }
 

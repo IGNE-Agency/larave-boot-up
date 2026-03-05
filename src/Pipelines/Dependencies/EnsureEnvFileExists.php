@@ -16,7 +16,7 @@ final readonly class EnsureEnvFileExists
         $env = base_path('.env');
         $example = base_path('.env.example');
 
-        if (!File::exists($env) && File::exists($example)) {
+        if (! File::exists($env) && File::exists($example)) {
             File::copy($example, $env);
             $command->info('.env copied from .env.example');
         } elseif (File::exists($env)) {

@@ -1,16 +1,22 @@
 # Custom Bootstrap Commands
 
-This package provides a safe and flexible hook system that allows project maintainers to register custom commands that run during the bootstrap process.
+This package provides a safe and flexible hook system that allows project
+maintainers to register custom commands that run during the bootstrap process.
 
 ## Overview
 
-You can register custom commands to run at two points in the bootstrap lifecycle:
-- **Before migrations**: After dependencies are installed but before database migrations
-- **After migrations**: After database migrations but before caching and queue workers start
+You can register custom commands to run at two points in the bootstrap
+lifecycle:
+
+- **Before migrations**: After dependencies are installed but before database
+  migrations
+- **After migrations**: After database migrations but before caching and queue
+  workers start
 
 ## Supported Server
 
 Commands can run in three safe server:
+
 - **Artisan**: Laravel artisan commands
 - **Composer**: Composer commands
 - **Package Manager**: npm/yarn/pnpm commands
@@ -41,7 +47,7 @@ final class CustomBootstrapCommands implements ProvidesBootstrapCommands
                     '--path' => 'resources/js/wayfinder',
                 ]
             ),
-            
+
             BootstrapCommand::packageManager(
                 command: 'run zodgen',
                 message: 'Generating Zod types from resources...',
@@ -58,7 +64,7 @@ final class CustomBootstrapCommands implements ProvidesBootstrapCommands
                 message: 'Generating Typescript types from models...',
                 args: []
             ),
-            
+
             BootstrapCommand::composer(
                 command: 'dump-autoload',
                 message: 'Optimizing autoloader...',
@@ -160,6 +166,7 @@ BootstrapCommand::packageManager(
 The `args` array supports the following value types:
 
 ### String/Numeric Values
+
 ```php
 args: [
     '--path' => 'resources/js',
@@ -168,6 +175,7 @@ args: [
 ```
 
 ### Boolean Flags
+
 ```php
 args: [
     '--force' => true,    // Includes the flag
@@ -176,6 +184,7 @@ args: [
 ```
 
 ### Array Values (Multiple Values for Same Key)
+
 ```php
 args: [
     '--exclude' => ['vendor', 'node_modules', 'storage'],
@@ -188,6 +197,7 @@ args: [
 The system includes multiple safety checks to prevent dangerous operations:
 
 ### Blocked Patterns
+
 - File deletion commands (`rm`, `del`)
 - System commands (`shutdown`, `reboot`, `kill`)
 - Disk operations (`dd`, `mkfs`, `format`)
@@ -196,6 +206,7 @@ The system includes multiple safety checks to prevent dangerous operations:
 - Dangerous redirects (`> /dev/`)
 
 ### Validation
+
 - Commands must be non-empty
 - Messages must be non-empty
 - Arguments must use allowed types only
@@ -217,6 +228,7 @@ The complete bootstrap process runs in this order:
 ## Error Handling
 
 If any custom command fails:
+
 - The bootstrap process will stop
 - An exception will be thrown with the error details
 - No subsequent commands will run
@@ -254,7 +266,7 @@ final class CustomBootstrapCommands implements ProvidesBootstrapCommands
                 message: 'Generating TypeScript routes and actions...',
                 args: ['--path' => 'resources/js/wayfinder']
             ),
-            
+
             // Run package manager type generation
             BootstrapCommand::packageManager(
                 command: 'run zodgen',
@@ -273,7 +285,7 @@ final class CustomBootstrapCommands implements ProvidesBootstrapCommands
                 message: 'Generating TypeScript types from models...',
                 args: []
             ),
-            
+
             // Optimize autoloader
             BootstrapCommand::composer(
                 command: 'dump-autoload',

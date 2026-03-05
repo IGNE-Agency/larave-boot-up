@@ -19,8 +19,7 @@ final class ToolInstallationManager
         private readonly ExternalCommandManager $commandManager,
         private readonly ConfigResolver $configResolver,
         private readonly ?OutputStyle $output = null
-    ) {
-    }
+    ) {}
 
     protected function getOutputHandler(): mixed
     {
@@ -33,7 +32,7 @@ final class ToolInstallationManager
             return;
         }
 
-        if (!$this->configResolver->isAutoInstallEnabled()) {
+        if (! $this->configResolver->isAutoInstallEnabled()) {
             throw new \RuntimeException("{$tool} is not installed. Please install it manually or enable auto_install in config.");
         }
 
@@ -49,7 +48,7 @@ final class ToolInstallationManager
     {
         $this->displayInstallMessage($tool, $server);
 
-        $installer = new ToolInstaller();
+        $installer = new ToolInstaller;
         $installer->setServer($server);
         $installer->install($tool, 'latest', $this->output);
 

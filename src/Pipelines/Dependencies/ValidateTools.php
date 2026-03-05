@@ -6,24 +6,23 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
 use Igne\LaravelBootstrap\Development\ToolInstaller;
+use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
 use Igne\LaravelBootstrap\Verifiers\VersionChecker;
 use Illuminate\Support\Collection;
 
 final readonly class ValidateTools
 {
     public function __construct(
-        private ToolInstaller $installer = new ToolInstaller(),
-        private VersionChecker $versionChecker = new VersionChecker()
-    ) {
-    }
+        private ToolInstaller $installer = new ToolInstaller,
+        private VersionChecker $versionChecker = new VersionChecker
+    ) {}
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
-        //TODO:  fix
+        // TODO:  fix
         $serverArgument = $command->argument('server');
-        if ($serverArgument && !$serverArgument instanceof \Igne\LaravelBootstrap\Enums\DevServerOption) {
+        if ($serverArgument && ! $serverArgument instanceof \Igne\LaravelBootstrap\Enums\DevServerOption) {
             $serverOption = \Igne\LaravelBootstrap\Enums\DevServerOption::from($serverArgument);
         }
 
@@ -36,7 +35,7 @@ final readonly class ValidateTools
     private function validateAllTools(InterruptibleCommand $command): void
     {
         $this->getToolsToValidate()
-            ->each(fn(string $tool) => $this->validateTool($tool, $command));
+            ->each(fn (string $tool) => $this->validateTool($tool, $command));
     }
 
     private function getToolsToValidate(): Collection
@@ -75,7 +74,7 @@ final readonly class ValidateTools
 
     private function isToolMissing(string $tool, InterruptibleCommand $command): bool
     {
-        return !$command->externalProcessManager->isCommandAvailable($tool);
+        return ! $command->externalProcessManager->isCommandAvailable($tool);
     }
 
     private function validateToolVersion(string $tool, InterruptibleCommand $command): void
@@ -104,7 +103,7 @@ final readonly class ValidateTools
 
     private function handleMissingTool(string $tool, InterruptibleCommand $command): void
     {
-        if (!$this->isAutoInstallEnabled()) {
+        if (! $this->isAutoInstallEnabled()) {
             $this->throwMissingToolException($tool);
         }
 

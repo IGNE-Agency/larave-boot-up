@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 
 final class OSCommandBuilder
 {
-    private string|null $command = null;
+    private ?string $command = null;
     private ?string $process = null;
     private ?int $pid = null;
     private ?string $version = null;
@@ -16,38 +16,42 @@ final class OSCommandBuilder
 
     public function __construct(
         private readonly OSCommand $osCommand
-    ) {
-    }
+    ) {}
 
     // ==================== Builder Methods ====================
 
     public function withCommand(string $command): self
     {
         $this->command = $command;
+
         return $this;
     }
 
     public function forProcess(string $process): self
     {
         $this->process = $process;
+
         return $this;
     }
 
     public function forPid(int $pid): self
     {
         $this->pid = $pid;
+
         return $this;
     }
 
     public function forVersion(string $version = 'latest'): self
     {
         $this->version = $version;
+
         return $this;
     }
 
     public function forUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -204,20 +208,22 @@ final class OSCommandBuilder
     {
         $phpVersion = $this->isLatestVersion($version) ? 'php' : "php{$version}";
         $extensions = ['cli', 'mbstring', 'xml', 'zip'];
-        $packages = array_map(fn($ext) => "{$phpVersion}-{$ext}", $extensions);
+        $packages = array_map(fn ($ext) => "{$phpVersion}-{$ext}", $extensions);
 
-        return 'sudo apt-get update && sudo apt-get install -y ' . $phpVersion . ' ' . implode(' ', $packages);
+        return 'sudo apt-get update && sudo apt-get install -y '.$phpVersion.' '.implode(' ', $packages);
     }
 
     private function installBun(string $version): string
     {
         if (PHP_OS_FAMILY === 'Windows') {
             $cmd = 'powershell -c "irm bun.sh/install.ps1|iex';
-            return $this->isLatestVersion($version) ? $cmd . '"' : $cmd . "; bun upgrade --version {$version}\"";
+
+            return $this->isLatestVersion($version) ? $cmd.'"' : $cmd."; bun upgrade --version {$version}\"";
         }
 
         $cmd = 'curl -fsSL https://bun.sh/install | bash';
-        return $this->isLatestVersion($version) ? $cmd : $cmd . " -s \"bun-v{$version}\"";
+
+        return $this->isLatestVersion($version) ? $cmd : $cmd." -s \"bun-v{$version}\"";
     }
 
     private function installNode(string $version): string
@@ -232,14 +238,15 @@ final class OSCommandBuilder
     private function installNodeLinux(string $version): string
     {
         $setupVersion = $this->isLatestVersion($version) ? 'lts' : $version;
+
         return "curl -fsSL https://deb.nodesource.com/setup_{$setupVersion}.x | sudo -E bash - && sudo apt-get install -y nodejs";
     }
 
     private function installComposer(): string
     {
         if (PHP_OS_FAMILY === 'Windows') {
-            return 'powershell -c "Invoke-WebRequest -Uri https://getcomposer.org/installer -OutFile composer-setup.php; ' .
-                'php composer-setup.php --install-dir=%USERPROFILE%\\AppData\\Roaming\\Composer --filename=composer.bat; ' .
+            return 'powershell -c "Invoke-WebRequest -Uri https://getcomposer.org/installer -OutFile composer-setup.php; '.
+                'php composer-setup.php --install-dir=%USERPROFILE%\\AppData\\Roaming\\Composer --filename=composer.bat; '.
                 'Remove-Item composer-setup.php"';
         }
 
@@ -285,6 +292,7 @@ final class OSCommandBuilder
     private function installWithWinget(string $package, string $version): string
     {
         $versionFlag = $this->isLatestVersion($version) ? '' : " --version {$version}";
+
         return "winget install {$package}{$versionFlag}";
     }
 
@@ -295,13 +303,13 @@ final class OSCommandBuilder
         return match (PHP_OS_FAMILY) {
             'Darwin' => $this->installWithBrewIfNeeded('herd', 'latest'),
             'Windows' => throw new \RuntimeException(
-                'Laravel Herd for Windows requires manual installation with administrator privileges. ' .
-                'Please download the installer from: https://herd.laravel.com/windows ' .
+                'Laravel Herd for Windows requires manual installation with administrator privileges. '.
+                'Please download the installer from: https://herd.laravel.com/windows '.
                 'After installation, you may need to add %USERPROFILE%\.config\herd to Windows Defender exclusions for better performance.'
             ),
             default => throw new \RuntimeException(
-                'Laravel Herd is only available for macOS 12.0+ and Windows 10+. ' .
-                'Please download it manually from: https://herd.laravel.com ' .
+                'Laravel Herd is only available for macOS 12.0+ and Windows 10+. '.
+                'Please download it manually from: https://herd.laravel.com '.
                 'For Linux, consider using Laravel Sail (Docker) or the built-in Laravel development server.'
             ),
         };

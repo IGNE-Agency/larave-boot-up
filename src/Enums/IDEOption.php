@@ -35,17 +35,18 @@ enum IDEOption: string
     {
         $cliCommand = $this->getCliCommand();
 
-        if (!$cliCommand) {
+        if (! $cliCommand) {
             return false;
         }
 
         $result = shell_exec("which {$cliCommand} 2>/dev/null");
-        return !empty(trim((string) $result));
+
+        return ! empty(trim((string) $result));
     }
 
     public function getTerminalCommand(string $command): ?string
     {
-        if (!$this->isCliAvailable()) {
+        if (! $this->isCliAvailable()) {
             return null;
         }
 

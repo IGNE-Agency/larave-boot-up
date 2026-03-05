@@ -12,9 +12,8 @@ use Igne\LaravelBootstrap\Verifiers\HerdServiceValidator;
 final readonly class ValidateServerServices
 {
     public function __construct(
-        private HerdServiceValidator $herdValidator = new HerdServiceValidator()
-    ) {
-    }
+        private HerdServiceValidator $herdValidator = new HerdServiceValidator
+    ) {}
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {

@@ -1,66 +1,67 @@
 {
-    "name": "igne-agency/laravel-bootstrap",
-    "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-server support (Herd, Sail, Laravel). Development only - not for production use.",
-    "type": "library",
-    "license": "MIT",
-    "keywords": [
-        "laravel",
-        "bootstrap",
-        "development",
-        "local-development",
-        "herd",
-        "sail",
-        "dev-tools"
-    ],
-    "authors": [
-        {
-            "name": "Rick Blanksma",
-            "email": "rick@igne.nl"
-        }
-    ],
-    "require": {
-        "php": "^8.4",
-        "illuminate/support": "^12.0",
-        "illuminate/console": "^12.0",
-        "illuminate/database": "^12.0",
-        "symfony/process": "^7.0"
-    },
-    "require-dev": {
-        "mockery/mockery": "^1.6",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
-        "phpunit/phpunit": "^11.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Igne\\LaravelBootstrap\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Igne\\LaravelBootstrap\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Igne\\LaravelBootstrap\\Providers\\BootstrapServiceProvider"
-            ]
-        }
-    },
-    "scripts": {
-        "test": "pest",
-        "test-coverage": "pest --coverage"
-    },
-    "config": {
-        "sort-packages": true,
-        "preferred-install": "dist",
-        "optimize-autoloader": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+  "name": "igne-agency/laravel-bootstrap",
+  "description": "A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-server support (Herd, Sail, Laravel). Development only - not for production use.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "bootstrap",
+    "development",
+    "local-development",
+    "herd",
+    "sail",
+    "dev-tools"
+  ],
+  "authors": [
+    {
+      "name": "Rick Blanksma",
+      "email": "rick@igne.nl"
+    }
+  ],
+  "require": {
+    "php": "^8.4",
+    "illuminate/support": "^12.0",
+    "illuminate/console": "^12.0",
+    "illuminate/database": "^12.0",
+    "symfony/process": "^7.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.27",
+    "mockery/mockery": "^1.6",
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^3.0",
+    "pestphp/pest-plugin-laravel": "^3.0",
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Igne\\LaravelBootstrap\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Igne\\LaravelBootstrap\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Igne\\LaravelBootstrap\\Providers\\BootstrapServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "pest",
+    "test-coverage": "pest --coverage"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

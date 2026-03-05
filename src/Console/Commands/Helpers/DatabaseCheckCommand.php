@@ -38,6 +38,7 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
                 ])
                 ->then(function (InterruptibleCommand $command) {
                     $this->info('✅ Database setup is correct.');
+
                     return $command;
                 });
         } catch (\Throwable $e) {

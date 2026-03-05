@@ -10,8 +10,7 @@ final class ProcessTrackingManager
         private readonly \Igne\LaravelBootstrap\Repositories\ProcessFileRepository $repository,
         private readonly ProcessManager $processManager,
         private readonly \Igne\LaravelBootstrap\Parsers\CommandExtractor $commandExtractor
-    ) {
-    }
+    ) {}
 
     public function trackProcess(string $command, int $pid): void
     {
@@ -54,7 +53,7 @@ final class ProcessTrackingManager
     {
         return array_filter(
             $processes,
-            fn(array $process) => $this->processManager->isRunning($process['pid'])
+            fn (array $process) => $this->processManager->isRunning($process['pid'])
         );
     }
 

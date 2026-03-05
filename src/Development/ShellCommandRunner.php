@@ -20,7 +20,7 @@ final class ShellCommandRunner
             }
         });
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \RuntimeException("Failed to run command: {$command}");
         }
     }

@@ -14,19 +14,18 @@ use function Laravel\Prompts\confirm;
 final readonly class EnsureDatabaseExists
 {
     public function __construct(
-        private DatabaseManager $databaseManager = new DatabaseManager()
-    ) {
-    }
+        private DatabaseManager $databaseManager = new DatabaseManager
+    ) {}
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
-        if (!config('bootstrap.database.auto_create', true)) {
+        if (! config('bootstrap.database.auto_create', true)) {
             return $next($command);
         }
 
-        $database = config('database.connections.' . config('database.default') . '.database');
+        $database = config('database.connections.'.config('database.default').'.database');
 
-        if (!$this->databaseManager->databaseExists($database)) {
+        if (! $this->databaseManager->databaseExists($database)) {
             $command->warn("Database '{$database}' does not exist.");
             $command->newLine();
 

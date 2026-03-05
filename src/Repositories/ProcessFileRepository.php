@@ -23,7 +23,7 @@ final class ProcessFileRepository
 
     public function load(): array
     {
-        if (!File::exists($this->filePath)) {
+        if (! File::exists($this->filePath)) {
             return [];
         }
 
@@ -44,7 +44,7 @@ final class ProcessFileRepository
     {
         $directory = dirname($this->filePath);
 
-        if (!File::isDirectory($directory)) {
+        if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
     }

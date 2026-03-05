@@ -15,8 +15,7 @@ final class ComposerJsonPresenceVerifier
 
     public function __construct(
         private readonly ?OutputStyle $output = null
-    ) {
-    }
+    ) {}
 
     protected function getOutputHandler(): mixed
     {

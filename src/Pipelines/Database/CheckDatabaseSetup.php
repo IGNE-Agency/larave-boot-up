@@ -17,18 +17,17 @@ use function Laravel\Prompts\text;
 final readonly class CheckDatabaseSetup
 {
     public function __construct(
-        private DatabaseManager $databaseManager = new DatabaseManager()
-    ) {
-    }
+        private DatabaseManager $databaseManager = new DatabaseManager
+    ) {}
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $missing = collect([
             'DB_CONNECTION' => config('database.default'),
-            'DB_HOST' => config('database.connections.' . config('database.default') . '.host'),
-            'DB_PORT' => config('database.connections.' . config('database.default') . '.port'),
-            'DB_DATABASE' => config('database.connections.' . config('database.default') . '.database'),
-        ])->filter(fn($value) => $value === null);
+            'DB_HOST' => config('database.connections.'.config('database.default').'.host'),
+            'DB_PORT' => config('database.connections.'.config('database.default').'.port'),
+            'DB_DATABASE' => config('database.connections.'.config('database.default').'.database'),
+        ])->filter(fn ($value) => $value === null);
 
         if ($missing->isNotEmpty()) {
             $this->handleMissingCredentials($command, $missing);
@@ -53,7 +52,7 @@ final readonly class CheckDatabaseSetup
     {
         $serverArgument = $command->argument('server');
         $serverOption = $serverArgument instanceof DevServerOption ? $serverArgument : DevServerOption::from($serverArgument ?? config('bootstrap.server.default', 'herd'));
-        $dbHost = config(key: 'database.connections.' . config('database.default') . '.host');
+        $dbHost = config(key: 'database.connections.'.config('database.default').'.host');
 
         if ($serverOption === DevServerOption::SAIL && $dbHost !== '127.0.0.1') {
             throw new DatabaseCheckException('Database host is not set to 127.0.0.1 needed for Sail. Please check your .env file.');

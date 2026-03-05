@@ -14,20 +14,19 @@ final class ServerProcessor
         private readonly ?OutputInterface $output = null,
         private readonly bool $isSilent = false,
         private readonly ?int $timeout = null
-    ) {
-    }
+    ) {}
 
     public function execute(array $command, string $workingDirectory): Process
     {
         $process = new Process($command, $workingDirectory, null, null, $this->timeout);
 
         $process->run(function ($type, $buffer) {
-            if (!$this->isSilent && $this->output) {
+            if (! $this->isSilent && $this->output) {
                 $this->output->write($buffer);
             }
         });
 
-        if (!$this->isSilent && !$process->isSuccessful()) {
+        if (! $this->isSilent && ! $process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 

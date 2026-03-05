@@ -7,8 +7,8 @@ namespace Igne\LaravelBootstrap\Pipelines\Bootstrap;
 use Closure;
 use Igne\LaravelBootstrap\Contracts\Server;
 use Igne\LaravelBootstrap\Enums\PackageManager;
-use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
 use Igne\LaravelBootstrap\Managers\PackageJsonManager;
+use Igne\LaravelBootstrap\Resolvers\ConfigResolver;
 use Igne\LaravelBootstrap\Traits\OpensTerminalCommands;
 
 final readonly class BuildOrWatchAssets
@@ -18,8 +18,7 @@ final readonly class BuildOrWatchAssets
     public function __construct(
         private PackageJsonManager $packageJsonManager,
         private ConfigResolver $configResolver
-    ) {
-    }
+    ) {}
 
     public function handle(Server $server, Closure $next): Server
     {
@@ -38,7 +37,7 @@ final readonly class BuildOrWatchAssets
 
     private function shouldSkipAssetBuilding(): bool
     {
-        return !$this->packageJsonManager->exists();
+        return ! $this->packageJsonManager->exists();
     }
 
     private function buildOrWatchInSeparateTerminal(): void
@@ -62,6 +61,7 @@ final readonly class BuildOrWatchAssets
     private function getPackageManager(): PackageManager
     {
         $default = config('bootstrap.package_manager.default', 'bun');
+
         return PackageManager::from($default);
     }
 

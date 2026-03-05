@@ -6,9 +6,9 @@ use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Server;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Factories\ServerFactory;
-use Igne\LaravelBootstrap\ServeApplication;
 use Igne\LaravelBootstrap\Handlers\ErrorHandler;
 use Igne\LaravelBootstrap\Resolvers\ServerResolver;
+use Igne\LaravelBootstrap\ServeApplication;
 use Illuminate\Contracts\Console\Isolatable;
 
 final class AppBootstrap extends InterruptibleCommand implements Isolatable
@@ -30,7 +30,7 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
         $serverName = $this->determineServer();
         $this->server = $this->createServer($serverName);
 
-        if (!$this->bootApplication()) {
+        if (! $this->bootApplication()) {
             return self::FAILURE;
         }
 
@@ -53,13 +53,15 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
     private function determineServer(): string
     {
-        $resolver = new ServerResolver();
+        $resolver = new ServerResolver;
+
         return $resolver->determineServer($this->argument('server'));
     }
 
     private function createServer(string $serverName): Server
     {
-        $factory = new ServerFactory();
+        $factory = new ServerFactory;
+
         return $factory->create($serverName, $this);
     }
 
@@ -69,9 +71,11 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
         try {
             $bootstrapper->boot();
+
             return true;
         } catch (\Throwable $e) {
             $this->handleBootstrapError($e);
+
             return false;
         }
     }
@@ -85,7 +89,7 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
     private function displaySuccessMessages(string $serverName): void
     {
         $this->newLine(2);
-        $this->info("You can stop the server with php artisan app:down");
+        $this->info('You can stop the server with php artisan app:down');
 
         if ($this->server->getServer() === DevServerOption::SAIL) {
             $this->displaySailTips();

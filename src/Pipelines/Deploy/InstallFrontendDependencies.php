@@ -16,8 +16,7 @@ final readonly class InstallFrontendDependencies
 {
     public function __construct(
         private PackageJsonManager $packageJsonManager
-    ) {
-    }
+    ) {}
 
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
@@ -38,7 +37,7 @@ final readonly class InstallFrontendDependencies
 
     private function shouldSkipFrontendSetup(): bool
     {
-        return !$this->packageJsonManager->exists();
+        return ! $this->packageJsonManager->exists();
     }
 
     private function getPackageManager(InterruptibleCommand $command): PackageManager
@@ -73,7 +72,7 @@ final readonly class InstallFrontendDependencies
             return;
         }
 
-        if (!isset($packageJson['scripts']['build']) && !isset($packageJson['scripts']['dev'])) {
+        if (! isset($packageJson['scripts']['build']) && ! isset($packageJson['scripts']['dev'])) {
             $command->warn('No build or dev script found in package.json. Asset building may fail.');
         }
     }
@@ -156,16 +155,16 @@ final readonly class InstallFrontendDependencies
     }
 
     /**
-     * Will return deleted lock files
-     * @param PackageManager $packageManager
+     * Will return deleted lock files.
+     *
      * @return Collection<int, string>
      */
     private function deleteOtherLockFiles(PackageManager $packageManager): Collection
     {
         return collect($packageManager->getOtherPackageManagers())
-            ->filter(fn(PackageManager $manager): bool => File::exists($this->getLockFilePath($manager)))
+            ->filter(fn (PackageManager $manager): bool => File::exists($this->getLockFilePath($manager)))
             ->each($this->deleteLockFile(...))
-            ->map(fn(PackageManager $manager): string => $manager->lockFile())
+            ->map(fn (PackageManager $manager): string => $manager->lockFile())
             ->values();
     }
 
@@ -199,7 +198,7 @@ final readonly class InstallFrontendDependencies
     private function isLockFileSyncIssue(string $errorMessage): bool
     {
         return $this->getLockFileSyncPatterns()
-            ->contains(fn(string $pattern): bool => $this->messageContainsPattern($errorMessage, $pattern));
+            ->contains(fn (string $pattern): bool => $this->messageContainsPattern($errorMessage, $pattern));
     }
 
     private function getLockFileSyncPatterns(): Collection

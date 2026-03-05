@@ -11,13 +11,14 @@ trait OpensTerminalCommands
 {
     protected function executeInSeparateTerminal(string $command): void
     {
-        $ideDetector = new IDEDetector();
+        $ideDetector = new IDEDetector;
 
         if ($ideDetector->isRunningInIDE()) {
             $ideCommand = $ideDetector->getIDETerminalCommand($command);
 
             if ($ideCommand) {
                 shell_exec("{$ideCommand} > /dev/null 2>&1 &");
+
                 return;
             }
         }

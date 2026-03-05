@@ -41,6 +41,7 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
+
                 return ltrim($tag, 'v');
             }
         } catch (\Exception $e) {
@@ -56,10 +57,11 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $versions = $response->json();
-                $ltsVersions = array_filter($versions, fn($v) => isset($v['lts']) && $v['lts'] !== false);
+                $ltsVersions = array_filter($versions, fn ($v) => isset($v['lts']) && $v['lts'] !== false);
 
-                if (!empty($ltsVersions)) {
+                if (! empty($ltsVersions)) {
                     $latest = reset($ltsVersions);
+
                     return ltrim($latest['version'], 'v');
                 }
             }
@@ -76,6 +78,7 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
+
                 return ltrim($tag, 'v');
             }
         } catch (\Exception $e) {
@@ -91,6 +94,7 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
+
                 return ltrim($tag, 'v');
             }
         } catch (\Exception $e) {
@@ -138,6 +142,7 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $tag = $response->json('tag_name');
+
                 return ltrim($tag, 'v');
             }
         } catch (\Exception $e) {
@@ -153,6 +158,7 @@ final class VersionChecker implements ChecksVersions
 
             if ($response->successful()) {
                 $version = $response->json('version');
+
                 return ltrim($version, 'v');
             }
         } catch (\Exception $e) {

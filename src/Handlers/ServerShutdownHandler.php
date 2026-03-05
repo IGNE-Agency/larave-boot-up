@@ -11,8 +11,7 @@ final class ServerShutdownHandler
 {
     public function __construct(
         private readonly ExternalCommandManager $commandManager
-    ) {
-    }
+    ) {}
 
     public function handleShutdown(
         Server $server,
@@ -21,6 +20,7 @@ final class ServerShutdownHandler
     ): void {
         if ($shouldStopServer) {
             $server->cleanup();
+
             return;
         }
 

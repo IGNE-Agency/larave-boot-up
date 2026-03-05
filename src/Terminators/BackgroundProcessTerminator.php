@@ -11,8 +11,7 @@ final class BackgroundProcessTerminator
 {
     public function __construct(
         private readonly ProcessTrackingManager $trackingManager
-    ) {
-    }
+    ) {}
 
     public function stopAll(OutputStyle $output): void
     {

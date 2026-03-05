@@ -15,7 +15,7 @@ final class CommandParser
         return collect(Arr::wrap($command))
             ->flatten()
             ->flatMap(
-                fn($item) => \is_string($item)
+                fn ($item) => \is_string($item)
                 ? Str::of($item)->trim()->explode(' ')
                 : Arr::wrap($item)
             )

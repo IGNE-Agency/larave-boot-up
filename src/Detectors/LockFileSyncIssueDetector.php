@@ -11,7 +11,7 @@ final class LockFileSyncIssueDetector
     public function isSyncIssue(string $errorMessage): bool
     {
         return $this->getSyncPatterns()
-            ->contains(fn(string $pattern): bool => $this->messageContainsPattern($errorMessage, $pattern));
+            ->contains(fn (string $pattern): bool => $this->messageContainsPattern($errorMessage, $pattern));
     }
 
     private function getSyncPatterns(): Collection

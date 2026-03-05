@@ -23,14 +23,14 @@ final class ProcessManager
 
     public function kill(int $pid): bool
     {
-        if (!$this->isRunning($pid)) {
+        if (! $this->isRunning($pid)) {
             return false;
         }
 
         $this->executeKillCommand($pid);
         $this->waitForTermination();
 
-        return !$this->isRunning($pid);
+        return ! $this->isRunning($pid);
     }
 
     private function buildCheckCommand(int $pid): ?string
@@ -42,14 +42,14 @@ final class ProcessManager
 
     private function processExists(?string $output, int $pid): bool
     {
-        return !empty($output) && str_contains((string) $output, (string) $pid);
+        return ! empty($output) && str_contains((string) $output, (string) $pid);
     }
 
     private function executeKillCommand(int $pid): void
     {
         $killCommand = OSCommand::KILL_PROCESS->forPid($pid)->execute();
 
-        if (!empty($killCommand)) {
+        if (! empty($killCommand)) {
             shell_exec($killCommand);
         }
     }

@@ -7,17 +7,17 @@ namespace Igne\LaravelBootstrap\Pipelines\Deploy;
 use Closure;
 use Exception;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Detectors\LockFileSyncIssueDetector;
 use Igne\LaravelBootstrap\Managers\ComposerDependencyManager;
 use Igne\LaravelBootstrap\Verifiers\ComposerJsonPresenceVerifier;
-use Igne\LaravelBootstrap\Detectors\LockFileSyncIssueDetector;
 
 final readonly class InstallComposerDependencies
 {
     public function __construct(
         private ComposerJsonPresenceVerifier $presenceVerifier,
         private LockFileSyncIssueDetector $issueDetector
-    ) {
-    }
+    ) {}
+
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $verifier = new ComposerJsonPresenceVerifier($command->getOutput());
@@ -34,6 +34,7 @@ final readonly class InstallComposerDependencies
 
         if ($this->shouldUpdateDependencies($command)) {
             $manager->update();
+
             return;
         }
 
@@ -67,15 +68,15 @@ final readonly class InstallComposerDependencies
         ComposerDependencyManager $manager,
         Exception $exception
     ): void {
-        $detector = new LockFileSyncIssueDetector();
+        $detector = new LockFileSyncIssueDetector;
 
         if ($detector->isSyncIssue($exception->getMessage())) {
             $manager->regenerateLockFile();
             $manager->install();
+
             return;
         }
 
         throw $exception;
     }
-
 }

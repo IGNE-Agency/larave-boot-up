@@ -14,8 +14,7 @@ final class ErrorHandler
 {
     public function __construct(
         private readonly OutputStyle $output
-    ) {
-    }
+    ) {}
 
     public function handleBootstrapException(\Throwable $exception, string $serverName): void
     {

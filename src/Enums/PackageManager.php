@@ -69,7 +69,7 @@ enum PackageManager: string
     {
         return \array_filter(
             self::cases(),
-            fn(PackageManager $manager): bool => $manager !== $this
+            fn (PackageManager $manager): bool => $manager !== $this
         );
     }
 }

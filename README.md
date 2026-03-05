@@ -1,13 +1,17 @@
 # Laravel Bootstrap
 
-A comprehensive Laravel application bootstrap package for local development with automatic dependency management, database setup, and multi-server support.
+A comprehensive Laravel application bootstrap package for local development with
+automatic dependency management, database setup, and multi-server support.
 
 ## Features
 
 - **Multi-Server Support**: Herd, Sail, or Laravel built-in server
-- **Automatic Dependency Installation**: Auto-installs missing tools (bun, composer, node, etc.)
-- **Smart Version Management**: Support for specific versions or 'latest' for safe updates
-- **Database Auto-Setup**: Interactive database creation and credential management
+- **Automatic Dependency Installation**: Auto-installs missing tools (bun,
+  composer, node, etc.)
+- **Smart Version Management**: Support for specific versions or 'latest' for
+  safe updates
+- **Database Auto-Setup**: Interactive database creation and credential
+  management
 - **Queue Management**: Automatic queue worker in separate terminal
 - **Migration Auto-Run**: Runs migrations automatically when available
 - **Interactive Prompts**: User-friendly setup experience
@@ -24,7 +28,9 @@ composer require igne-agency/laravel-bootstrap --dev
 
 The package will auto-register via Laravel's package discovery.
 
-> **Important:** Always use the `--dev` flag to ensure this package is only installed in development environments and excluded from production deployments.
+> **Important:** Always use the `--dev` flag to ensure this package is only
+> installed in development environments and excluded from production
+> deployments.
 
 ## Quick Start
 
@@ -52,7 +58,8 @@ Publish the configuration file:
 php artisan vendor:publish --tag=bootstrap-config
 ```
 
-This creates `config/bootstrap.php` where you can configure all aspects of the package.
+This creates `config/bootstrap.php` where you can configure all aspects of the
+package.
 
 ### Configuration Options
 
@@ -87,7 +94,8 @@ This creates `config/bootstrap.php` where you can configure all aspects of the p
 ],
 ```
 
-Use `'latest'` for automatic safe version updates, or specify exact versions like `'20.11.0'`.
+Use `'latest'` for automatic safe version updates, or specify exact versions
+like `'20.11.0'`.
 
 #### Auto-Installation
 
@@ -258,7 +266,9 @@ BOOTSTRAP_AUTO_START_QUEUE=false
 
 ### Custom Bootstrap Commands
 
-You can hook into the bootstrap process to run your own commands (e.g., code generation, type generation). Create a class implementing `ProvidesBootstrapCommands` and register it in your service provider:
+You can hook into the bootstrap process to run your own commands (e.g., code
+generation, type generation). Create a class implementing
+`ProvidesBootstrapCommands` and register it in your service provider:
 
 ```php
 // app/Bootstrap/CustomBootstrapCommands.php
@@ -289,7 +299,8 @@ $this->app->singleton(
 );
 ```
 
-Commands can be Artisan, Composer, or Package Manager commands. See [CUSTOM_COMMANDS.md](CUSTOM_COMMANDS.md) for full documentation.
+Commands can be Artisan, Composer, or Package Manager commands. See
+[CUSTOM_COMMANDS.md](CUSTOM_COMMANDS.md) for full documentation.
 
 ### Automatic Tool Installation
 
@@ -371,7 +382,8 @@ For Sail users:
 
 ## Production Safety
 
-This package is **automatically excluded** from production when installed with `--dev`. Composer will not install dev dependencies when you run:
+This package is **automatically excluded** from production when installed with
+`--dev`. Composer will not install dev dependencies when you run:
 
 ```bash
 composer install --no-dev
@@ -381,7 +393,8 @@ This ensures the package and its commands are never available in production.
 
 ### Environment Detection
 
-The package includes safety checks to prevent accidental use in non-local environments. Commands will refuse to run if:
+The package includes safety checks to prevent accidental use in non-local
+environments. Commands will refuse to run if:
 
 - `APP_ENV` is not set to `local` or `development`
 - The system has detected as a remote server
@@ -392,8 +405,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Credits
 
-Created by [Rick Blanksma](https://github.com/rickblanksma) at [IGNE](https://igne.nl)
+Created by [Rick Blanksma](https://github.com/rickblanksma) at
+[IGNE](https://igne.nl)
 
 ## Support
 
-For issues, questions, or contributions, please use the [GitHub issue tracker](https://github.com/igne/laravel-bootstrap/issues).
+For issues, questions, or contributions, please use the
+[GitHub issue tracker](https://github.com/igne/laravel-bootstrap/issues).

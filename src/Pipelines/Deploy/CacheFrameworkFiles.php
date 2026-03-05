@@ -11,7 +11,7 @@ final readonly class CacheFrameworkFiles
 {
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
-        if (!config('bootstrap.deploy.enable_caching', true)) {
+        if (! config('bootstrap.deploy.enable_caching', true)) {
             return $next($command);
         }
 
@@ -29,7 +29,7 @@ final readonly class CacheFrameworkFiles
         try {
             $command->call('config:cache');
         } catch (\Throwable $e) {
-            $command->warn('Failed to cache config: ' . $e->getMessage());
+            $command->warn('Failed to cache config: '.$e->getMessage());
         }
     }
 
@@ -38,7 +38,7 @@ final readonly class CacheFrameworkFiles
         try {
             $command->call('route:cache');
         } catch (\Throwable $e) {
-            $command->warn('Failed to cache routes: ' . $e->getMessage());
+            $command->warn('Failed to cache routes: '.$e->getMessage());
         }
     }
 
@@ -47,7 +47,7 @@ final readonly class CacheFrameworkFiles
         try {
             $command->call('view:cache');
         } catch (\Throwable $e) {
-            $command->warn('Failed to cache views: ' . $e->getMessage());
+            $command->warn('Failed to cache views: '.$e->getMessage());
         }
     }
 }

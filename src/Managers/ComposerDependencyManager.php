@@ -15,8 +15,7 @@ final class ComposerDependencyManager
     public function __construct(
         private readonly ExternalCommandManager $commandManager,
         private readonly ?OutputStyle $output = null
-    ) {
-    }
+    ) {}
 
     protected function getOutputHandler(): mixed
     {

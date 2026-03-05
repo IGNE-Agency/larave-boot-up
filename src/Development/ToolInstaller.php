@@ -17,12 +17,13 @@ final class ToolInstaller implements InstallsTools
 
     public function __construct()
     {
-        $this->shellRunner = new ShellCommandRunner();
+        $this->shellRunner = new ShellCommandRunner;
     }
 
     public function setServer(?DevServerOption $server): self
     {
         $this->server = $server;
+
         return $this;
     }
 
@@ -56,6 +57,7 @@ final class ToolInstaller implements InstallsTools
     {
         if ($this->server === DevServerOption::HERD) {
             $phpVersion = $version === 'latest' ? 'php' : $version;
+
             return "herd php:install {$phpVersion} && herd use {$phpVersion}";
         }
 
@@ -103,5 +105,4 @@ final class ToolInstaller implements InstallsTools
         $command = OSCommand::INSTALL_HERD->execute();
         $this->shellRunner->run($command, $output);
     }
-
 }

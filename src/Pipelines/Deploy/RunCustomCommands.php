@@ -45,7 +45,7 @@ abstract readonly class RunCustomCommands implements ProvidesCustomCommands
 
     private function getCommandProvider(): ?ProvidesBootstrapCommands
     {
-        if (!app()->bound(ProvidesBootstrapCommands::class)) {
+        if (! app()->bound(ProvidesBootstrapCommands::class)) {
             return null;
         }
 
@@ -65,7 +65,7 @@ abstract readonly class RunCustomCommands implements ProvidesCustomCommands
                 CommandEnvironmentOption::PACKAGE_MANAGER => $this->runPackageManager($command, $bootstrapCommand),
             };
         } catch (\Throwable $e) {
-            $command->warn("Failed to execute custom command '{$bootstrapCommand->command}': " . $e->getMessage());
+            $command->warn("Failed to execute custom command '{$bootstrapCommand->command}': ".$e->getMessage());
         }
     }
 

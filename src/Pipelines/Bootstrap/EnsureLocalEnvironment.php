@@ -17,7 +17,7 @@ final readonly class EnsureLocalEnvironment
 
         $allowedEnvironments = ['local', 'development'];
 
-        if (!\in_array($env, $allowedEnvironments, true)) {
+        if (! \in_array($env, $allowedEnvironments, true)) {
             if ($server instanceof DevServer && $server->console) {
                 $server->console->error("⚠️  This command is for local development only and cannot run in '{$env}' environment.");
                 $server->console->line('');

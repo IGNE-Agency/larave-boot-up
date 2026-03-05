@@ -55,6 +55,7 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
                 ->then(function (InterruptibleCommand $command) {
                     $command->finalizeRuntime();
                     $this->info('✅ Laravel booted successfully.');
+
                     return $command;
                 });
         } catch (\Throwable $e) {
@@ -76,14 +77,14 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
         try {
             $this->callSilent('auth:clear-resets');
         } catch (\Throwable $e) {
-            $this->warn('Failed to clear auth resets: ' . $e->getMessage());
+            $this->warn('Failed to clear auth resets: '.$e->getMessage());
         }
 
         $this->info('Linking storage');
         try {
             $this->callSilent('storage:link');
         } catch (\Throwable $e) {
-            $this->warn('Failed to link storage: ' . $e->getMessage());
+            $this->warn('Failed to link storage: '.$e->getMessage());
         }
 
         return $this;

@@ -26,7 +26,7 @@ abstract class DevServer implements Server
     {
         $this->command = new ExternalCommandManager($this->getServer(), $command?->getOutput());
         $this->console = $command;
-        $this->configResolver = new ConfigResolver();
+        $this->configResolver = new ConfigResolver;
         $this->browserLauncher = new BrowserLauncher($this->command, $command?->getOutput());
         $this->installationManager = new ToolInstallationManager($this->command, $this->configResolver, $command?->getOutput());
         $this->ensureServerInstalled();

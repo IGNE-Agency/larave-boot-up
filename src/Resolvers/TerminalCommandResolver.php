@@ -11,8 +11,7 @@ final class TerminalCommandResolver
 {
     public function __construct(
         private readonly IDEDetector $ideDetector
-    ) {
-    }
+    ) {}
 
     public function resolveCommand(string $command): ?string
     {

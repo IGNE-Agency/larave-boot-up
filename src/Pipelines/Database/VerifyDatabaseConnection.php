@@ -14,7 +14,7 @@ final readonly class VerifyDatabaseConnection
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $database = config('database.connections.'.config('database.default').'.database');
-        
+
         try {
             DB::connection()->getPDO();
             DB::connection()->getDatabaseName();

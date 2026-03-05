@@ -11,12 +11,13 @@ use Igne\LaravelBootstrap\Traits\OpensTerminalCommands;
 final readonly class StartQueueWorker
 {
     use OpensTerminalCommands;
+
     public function handle(InterruptibleCommand $command, Closure $next): InterruptibleCommand
     {
         $autoStart = config('bootstrap.queue.auto_start', true);
         $separateTerminal = config('bootstrap.queue.separate_terminal', true);
 
-        if (!$autoStart) {
+        if (! $autoStart) {
             $command->info('Queue worker auto-start disabled.');
 
             return $next($command);

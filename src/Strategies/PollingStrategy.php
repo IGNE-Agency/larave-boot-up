@@ -19,17 +19,19 @@ final class PollingStrategy
         ?Closure $isInterrupted = null
     ): void {
         $start = microtime(true);
-        $onProgress ??= fn() => null;
-        $onInterrupt ??= fn() => null;
+        $onProgress ??= fn () => null;
+        $onInterrupt ??= fn () => null;
 
         while ($this->shouldContinueWaiting($start, $timeoutSeconds)) {
             if ($this->isInterrupted($isInterrupted)) {
                 $onInterrupt();
+
                 return;
             }
 
             if ($check()) {
                 $onSuccess();
+
                 return;
             }
 

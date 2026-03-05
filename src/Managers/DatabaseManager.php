@@ -17,10 +17,10 @@ final class DatabaseManager implements ManagesDatabase
             $driver = $this->getDriver();
 
             return match ($driver) {
-                'mysql' => $this->queryDatabaseExists("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", $database),
-                'pgsql' => $this->queryDatabaseExists("SELECT datname FROM pg_database WHERE datname = ?", $database),
+                'mysql' => $this->queryDatabaseExists('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?', $database),
+                'pgsql' => $this->queryDatabaseExists('SELECT datname FROM pg_database WHERE datname = ?', $database),
                 'sqlite' => $this->sqliteDatabaseExists(),
-                'sqlsrv' => $this->queryDatabaseExists("SELECT name FROM sys.databases WHERE name = ?", $database),
+                'sqlsrv' => $this->queryDatabaseExists('SELECT name FROM sys.databases WHERE name = ?', $database),
                 default => false,
             };
         } catch (\Exception $e) {
@@ -43,7 +43,7 @@ final class DatabaseManager implements ManagesDatabase
     {
         $envPath = base_path('.env');
 
-        if (!File::exists($envPath)) {
+        if (! File::exists($envPath)) {
             throw new \RuntimeException('.env file not found');
         }
 
@@ -55,8 +55,8 @@ final class DatabaseManager implements ManagesDatabase
             $envContent = Str::of($envContent)
                 ->when(
                     Str::contains($envContent, "{$key}="),
-                    fn($str) => $str->replaceMatches($pattern, "{$key}={$value}"),
-                    fn($str) => $str->append("\n{$key}={$value}")
+                    fn ($str) => $str->replaceMatches($pattern, "{$key}={$value}"),
+                    fn ($str) => $str->append("\n{$key}={$value}")
                 )
                 ->toString();
         }
@@ -66,12 +66,13 @@ final class DatabaseManager implements ManagesDatabase
 
     private function queryDatabaseExists(string $query, string $database): bool
     {
-        return !empty(DB::select($query, [$database]));
+        return ! empty(DB::select($query, [$database]));
     }
 
     private function sqliteDatabaseExists(): bool
     {
         $databasePath = $this->getConnectionConfig('database');
+
         return $databasePath === ':memory:' || File::exists($databasePath);
     }
 
@@ -85,7 +86,7 @@ final class DatabaseManager implements ManagesDatabase
     {
         $pdo = $this->createPDO('pgsql');
 
-        if (!$this->pdoDatabaseExists($pdo, "SELECT 1 FROM pg_database WHERE datname = '{$database}'")) {
+        if (! $this->pdoDatabaseExists($pdo, "SELECT 1 FROM pg_database WHERE datname = '{$database}'")) {
             $pdo->exec("CREATE DATABASE \"{$database}\" WITH ENCODING 'UTF8'");
         }
     }
@@ -106,7 +107,7 @@ final class DatabaseManager implements ManagesDatabase
     {
         $pdo = $this->createPDO('sqlsrv');
 
-        if (!$this->pdoDatabaseExists($pdo, "SELECT name FROM sys.databases WHERE name = '{$database}'")) {
+        if (! $this->pdoDatabaseExists($pdo, "SELECT name FROM sys.databases WHERE name = '{$database}'")) {
             $pdo->exec("CREATE DATABASE [{$database}] COLLATE Latin1_General_100_CI_AS_SC_UTF8");
         }
     }
@@ -119,6 +120,7 @@ final class DatabaseManager implements ManagesDatabase
     private function getConnectionConfig(string $key): mixed
     {
         $connection = config('database.default');
+
         return config("database.connections.{$connection}.{$key}");
     }
 
@@ -136,6 +138,7 @@ final class DatabaseManager implements ManagesDatabase
     private function pdoDatabaseExists(\PDO $pdo, string $query): bool
     {
         $result = $pdo->query($query);
+
         return $result && $result->rowCount() > 0;
     }
 }

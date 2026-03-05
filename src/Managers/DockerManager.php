@@ -11,8 +11,7 @@ final class DockerManager
 {
     public function __construct(
         private readonly ExternalCommandManager $commandManager
-    ) {
-    }
+    ) {}
 
     public function isRunning(): bool
     {

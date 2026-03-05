@@ -2,12 +2,12 @@
 
 namespace Igne\LaravelBootstrap\Console;
 
+use Closure;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\PackageManager;
-use Igne\LaravelBootstrap\Verifiers\CommandPresenceVerifier;
 use Igne\LaravelBootstrap\Repositories\ProcessRepository;
 use Igne\LaravelBootstrap\Strategies\PollingStrategy;
-use Closure;
+use Igne\LaravelBootstrap\Verifiers\CommandPresenceVerifier;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -32,9 +32,9 @@ class ExternalCommandManager
         $this->output = $output ?: new StreamOutput(STDOUT);
         $this->isSilent = $isSilent;
         $this->packageManager = $this->resolvePackageManager();
-        $this->processRepository = new ProcessRepository();
-        $this->presenceVerifier = new CommandPresenceVerifier();
-        $this->pollingStrategy = new PollingStrategy();
+        $this->processRepository = new ProcessRepository;
+        $this->presenceVerifier = new CommandPresenceVerifier;
+        $this->pollingStrategy = new PollingStrategy;
     }
 
     public function create(?bool $silent = null): ExternalCommand

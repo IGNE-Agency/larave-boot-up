@@ -10,12 +10,12 @@ trait BuildsCommandOptions
     {
         return collect($options)
             ->mapWithKeys(
-                fn($value, $key) => \is_int($key)
+                fn ($value, $key) => \is_int($key)
                     ? [$value => true]
                     : [$key => $value]
             )
             ->map(
-                fn($value, $key) => $value === false || $value === null
+                fn ($value, $key) => $value === false || $value === null
                     ? null
                     : (\is_bool($value) ? $key : "{$key}={$value}")
             )

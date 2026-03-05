@@ -16,7 +16,7 @@ final class ServerResolver
 
         $defaultServer = $this->getDefaultServer();
 
-        if ($defaultServer !== null && !$this->shouldPrompt()) {
+        if ($defaultServer !== null && ! $this->shouldPrompt()) {
             return strtolower($defaultServer);
         }
 

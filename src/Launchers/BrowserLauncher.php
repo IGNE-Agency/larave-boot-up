@@ -16,8 +16,7 @@ final class BrowserLauncher
     public function __construct(
         private readonly ExternalCommandManager $commandManager,
         private readonly ?OutputStyle $output = null
-    ) {
-    }
+    ) {}
 
     protected function getOutputHandler(): mixed
     {
@@ -26,8 +25,9 @@ final class BrowserLauncher
 
     public function openUrl(string $url): void
     {
-        if (!$this->canOpenBrowser()) {
+        if (! $this->canOpenBrowser()) {
             $this->displayManualOpenMessage($url);
+
             return;
         }
 
@@ -36,7 +36,7 @@ final class BrowserLauncher
 
     public function openWithCommand(string $command): void
     {
-        if (!OSCommand::OPEN_BROWSER->canExecute()) {
+        if (! OSCommand::OPEN_BROWSER->canExecute()) {
             return;
         }
 

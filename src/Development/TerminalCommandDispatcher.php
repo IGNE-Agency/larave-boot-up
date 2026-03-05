@@ -10,8 +10,7 @@ final class TerminalCommandDispatcher
         private readonly \Igne\LaravelBootstrap\Resolvers\TerminalCommandResolver $commandResolver,
         private readonly BackgroundCommandRunner $commandRunner,
         private readonly \Igne\LaravelBootstrap\Managers\ProcessTrackingManager $trackingManager
-    ) {
-    }
+    ) {}
 
     public function executeInSeparateTerminal(string $command): void
     {
