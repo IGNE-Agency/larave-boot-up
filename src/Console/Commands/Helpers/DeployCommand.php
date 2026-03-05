@@ -2,13 +2,14 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
+use Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap;
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
-use Igne\LaravelBootstrap\Exceptions\AppDeploymentException;
+use Igne\LaravelBootstrap\Exceptions\ApplicationDeploymentException;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class AppDeployCommand extends InterruptibleCommand implements Isolatable
+final class DeployCommand extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'app:deploy {server : The development server to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
@@ -17,14 +18,14 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
 
     protected $description = 'Boot up Laravel server';
 
-    /**
-     * Indicates whether the command should be hidden from the Artisan command list.
-     *
-     * @var bool
-     */
     protected $hidden = true;
 
     public ExternalCommandManager $externalProcessManager;
+
+    public function __construct(protected ApplicationDeploymentBootstrap $bootstrapper)
+    {
+        parent::__construct();
+    }
 
     public function handleWithInterrupts(): int
     {
@@ -41,25 +42,10 @@ final class AppDeployCommand extends InterruptibleCommand implements Isolatable
         $this->newLine();
 
         try {
-            app(\Illuminate\Pipeline\Pipeline::class)
-                ->send($this)
-                ->through([
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\InstallComposerDependencies::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\InstallFrontendDependencies::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsBeforeMigrations::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\RunDatabaseMigrations::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\RunCustomCommandsAfterMigrations::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\CacheFrameworkFiles::class,
-                    \Igne\LaravelBootstrap\Pipelines\Deploy\StartQueueWorker::class,
-                ])
-                ->then(function (InterruptibleCommand $command) {
-                    $command->finalizeRuntime();
-                    $this->info('✅ Laravel booted successfully.');
-
-                    return $command;
-                });
+            $this->bootstrapper->register($this)->boot();
+            $this->info('✅ Laravel booted successfully.');
         } catch (\Throwable $e) {
-            throw new AppDeploymentException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
+            throw new ApplicationDeploymentException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;

@@ -2,22 +2,23 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
+use Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
+use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class DatabaseCheckCommand extends InterruptibleCommand implements Isolatable
+final class ValidateDatabaseCommand extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'check:database {server : The development server to use (herd, sail, laravel)}';
 
     protected $description = 'Make sure the database is correct for development';
 
-    /**
-     * Indicates whether the command should be hidden from the Artisan command list.
-     *
-     * @var bool
-     */
     protected $hidden = true;
+
+    public function __construct(protected DatabaseSetupBootstrap $bootstrapper)
+    {
+        parent::__construct();
+    }
 
     public function handleWithInterrupts(): int
     {
@@ -28,21 +29,10 @@ final class DatabaseCheckCommand extends InterruptibleCommand implements Isolata
         $this->newLine();
 
         try {
-            app(\Illuminate\Pipeline\Pipeline::class)
-                ->send($this)
-                ->through([
-                    \Igne\LaravelBootstrap\Pipelines\Database\CheckDatabaseSetup::class,
-                    \Igne\LaravelBootstrap\Pipelines\Database\EnsureDatabaseExists::class,
-                    \Igne\LaravelBootstrap\Pipelines\Database\VerifyDatabaseConnection::class,
-                    \Igne\LaravelBootstrap\Pipelines\Database\RunInitialMigrations::class,
-                ])
-                ->then(function (InterruptibleCommand $command) {
-                    $this->info('✅ Database setup is correct.');
-
-                    return $command;
-                });
+            $this->bootstrapper->register($this)->boot();
+            $this->info('✅ Database setup is correct.');
         } catch (\Throwable $e) {
-            throw new DatabaseCheckException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
+            throw new DatabaseValidationException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;

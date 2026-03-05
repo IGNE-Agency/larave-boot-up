@@ -6,7 +6,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Database;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
+use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
 use Igne\LaravelBootstrap\Managers\DatabaseManager;
 
 use function Laravel\Prompts\confirm;
@@ -41,7 +41,7 @@ final readonly class EnsureDatabaseExists
                 $this->databaseManager->createDatabase($database);
                 $command->info("Database '{$database}' created successfully.");
             } else {
-                throw new DatabaseCheckException("Database '{$database}' does not exist and was not created.");
+                throw new DatabaseValidationException("Database '{$database}' does not exist and was not created.");
             }
         }
 

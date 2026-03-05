@@ -12,6 +12,26 @@ final class BootstrapServiceProvider extends ServiceProvider
             __DIR__.'/../config/bootstrap.php',
             'bootstrap'
         );
+
+        $this->app->singleton(
+            \Igne\LaravelBootstrap\Bootstrap\ApplicationServeBootstrap::class,
+            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\ApplicationServeBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
+        );
+
+        $this->app->singleton(
+            \Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap::class,
+            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
+        );
+
+        $this->app->singleton(
+            \Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap::class,
+            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
+        );
+
+        $this->app->singleton(
+            \Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap::class,
+            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
+        );
     }
 
     public function boot(): void
@@ -22,11 +42,11 @@ final class BootstrapServiceProvider extends ServiceProvider
             ], 'bootstrap-config');
 
             $this->commands([
-                \Igne\LaravelBootstrap\Console\Commands\AppBootstrap::class,
-                \Igne\LaravelBootstrap\Console\Commands\AppDown::class,
-                \Igne\LaravelBootstrap\Console\Commands\Helpers\AppDeployCommand::class,
-                \Igne\LaravelBootstrap\Console\Commands\Helpers\DatabaseCheckCommand::class,
-                \Igne\LaravelBootstrap\Console\Commands\Helpers\DependencyCheckCommand::class,
+                \Igne\LaravelBootstrap\Console\Commands\ServeApplicationCommand::class,
+                \Igne\LaravelBootstrap\Console\Commands\ShutdownApplicationCommand::class,
+                \Igne\LaravelBootstrap\Console\Commands\Helpers\DeployCommand::class,
+                \Igne\LaravelBootstrap\Console\Commands\Helpers\ValidateDatabaseCommand::class,
+                \Igne\LaravelBootstrap\Console\Commands\Helpers\ValidateDependenciesCommand::class,
             ]);
         }
     }

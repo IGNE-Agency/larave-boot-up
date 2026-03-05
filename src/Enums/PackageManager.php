@@ -44,12 +44,12 @@ enum PackageManager: string
         };
     }
 
-    public function installPackageManagerCommand(string $version = 'latest'): string
+    public function installPackageManagerCommand(string $version = 'latest'): int
     {
         return match ($this) {
-            self::BUN => OSCommand::INSTALL_BUN->forVersion($version)->execute(),
-            self::YARN => OSCommand::INSTALL_YARN->forVersion($version)->execute(),
-            self::NPM => OSCommand::INSTALL_NPM->forVersion($version)->execute(),
+            self::BUN => OSCommand::INSTALL_BUN->forVersion($version)->call(),
+            self::YARN => OSCommand::INSTALL_YARN->forVersion($version)->call(),
+            self::NPM => OSCommand::INSTALL_NPM->forVersion($version)->call(),
         };
     }
 

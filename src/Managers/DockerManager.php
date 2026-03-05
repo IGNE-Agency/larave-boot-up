@@ -20,6 +20,6 @@ final class DockerManager
 
     public function start(): void
     {
-        $this->commandManager->call(OSCommand::START_DOCKER->execute());
+        OSCommand::START_DOCKER->call();
     }
 }

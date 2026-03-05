@@ -7,7 +7,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Database;
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
-use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
+use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
 use Igne\LaravelBootstrap\Managers\DatabaseManager;
 
 use function Laravel\Prompts\password;
@@ -44,7 +44,7 @@ final readonly class CheckDatabaseSetup
             $this->promptForDatabaseCredentials($command);
         } else {
             $missingKeys = $missing->keys()->implode(', ');
-            throw new DatabaseCheckException("Database connection is not set up correctly. Missing {$missingKeys}. Please check your .env file.");
+            throw new DatabaseValidationException("Database connection is not set up correctly. Missing {$missingKeys}. Please check your .env file.");
         }
     }
 
@@ -55,11 +55,11 @@ final readonly class CheckDatabaseSetup
         $dbHost = config(key: 'database.connections.'.config('database.default').'.host');
 
         if ($serverOption === DevServerOption::SAIL && $dbHost !== '127.0.0.1') {
-            throw new DatabaseCheckException('Database host is not set to 127.0.0.1 needed for Sail. Please check your .env file.');
+            throw new DatabaseValidationException('Database host is not set to 127.0.0.1 needed for Sail. Please check your .env file.');
         }
 
         if ($serverOption !== DevServerOption::SAIL && $dbHost !== '127.0.0.1') {
-            throw new DatabaseCheckException('Database host is not set to 127.0.0.1. Please check your .env file.');
+            throw new DatabaseValidationException('Database host is not set to 127.0.0.1. Please check your .env file.');
         }
     }
 

@@ -50,8 +50,7 @@ final class BrowserLauncher
 
     private function executeBrowserCommand(string $url): void
     {
-        $command = OSCommand::OPEN_BROWSER->forUrl($url)->execute();
-        $this->commandManager->callSilent($command);
+        OSCommand::OPEN_BROWSER->forUrl($url)->call();
     }
 
     private function displayManualOpenMessage(string $url): void

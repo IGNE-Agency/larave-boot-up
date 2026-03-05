@@ -35,9 +35,12 @@ final class ProcessManager
 
     private function buildCheckCommand(int $pid): ?string
     {
-        return OSCommand::CHECK_PROCESS
-            ->forProcess((string) $pid)
-            ->execute();
+        $command = match (PHP_OS_FAMILY) {
+            'Windows' => "tasklist /FI \"IMAGENAME eq {$pid}.exe\" /NH",
+            default => "pgrep -f {$pid}",
+        };
+
+        return $command;
     }
 
     private function processExists(?string $output, int $pid): bool
@@ -47,11 +50,7 @@ final class ProcessManager
 
     private function executeKillCommand(int $pid): void
     {
-        $killCommand = OSCommand::KILL_PROCESS->forPid($pid)->execute();
-
-        if (! empty($killCommand)) {
-            shell_exec($killCommand);
-        }
+        OSCommand::KILL_PROCESS->forPid($pid)->call();
     }
 
     private function waitForTermination(): void

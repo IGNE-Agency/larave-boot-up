@@ -4,4 +4,4 @@ namespace Igne\LaravelBootstrap\Exceptions;
 
 use Exception;
 
-class DatabaseCheckException extends Exception {}
+class DependencyValidationException extends Exception {}

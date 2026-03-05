@@ -38,7 +38,7 @@ final class LaravelServer extends DevServer
     public function cleanup(): void
     {
         $this->command->stopAllProcesses();
-        $this->command->callSilent(OSCommand::KILL_PHP_ARTISAN->execute());
+        OSCommand::KILL_PHP_ARTISAN->callSilent();
         $this->info('Laravel server stopped');
     }
 

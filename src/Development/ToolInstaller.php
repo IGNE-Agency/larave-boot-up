@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Development;
 
+use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Contracts\InstallsTools;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
@@ -13,11 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class ToolInstaller implements InstallsTools
 {
     private ?DevServerOption $server = null;
-    private ShellCommandRunner $shellRunner;
+    private ExternalCommandManager $commandManager;
 
     public function __construct()
     {
-        $this->shellRunner = new ShellCommandRunner;
+        $this->commandManager = new ExternalCommandManager;
     }
 
     public function setServer(?DevServerOption $server): self
@@ -49,60 +50,48 @@ final class ToolInstaller implements InstallsTools
 
     protected function installPhp(string $version, ?OutputInterface $output): void
     {
-        $command = $this->getPhpInstallCommand($version);
-        $this->shellRunner->run($command, $output);
-    }
-
-    private function getPhpInstallCommand(string $version): string
-    {
         if ($this->server === DevServerOption::HERD) {
             $phpVersion = $version === 'latest' ? 'php' : $version;
+            $this->commandManager->call("herd php:install {$phpVersion} && herd use {$phpVersion}");
 
-            return "herd php:install {$phpVersion} && herd use {$phpVersion}";
+            return;
         }
 
-        return OSCommand::INSTALL_PHP->forVersion($version)->execute();
+        OSCommand::INSTALL_PHP->forVersion($version)->call();
     }
 
     protected function installBun(string $version, ?OutputInterface $output): void
     {
-        $command = PackageManager::BUN->installPackageManagerCommand($version);
-        $this->shellRunner->run($command, $output);
+        PackageManager::BUN->installPackageManagerCommand($version);
     }
 
     protected function installNode(string $version, ?OutputInterface $output): void
     {
-        $command = OSCommand::INSTALL_NODE->forVersion($version)->execute();
-        $this->shellRunner->run($command, $output);
+        OSCommand::INSTALL_NODE->forVersion($version)->call();
     }
 
     protected function installComposer(string $version, ?OutputInterface $output): void
     {
-        $command = OSCommand::INSTALL_COMPOSER->execute();
-        $this->shellRunner->run($command, $output);
+        OSCommand::INSTALL_COMPOSER->call();
     }
 
     protected function installYarn(string $version, ?OutputInterface $output): void
     {
-        $command = PackageManager::YARN->installPackageManagerCommand($version);
-        $this->shellRunner->run($command, $output);
+        PackageManager::YARN->installPackageManagerCommand($version);
     }
 
     protected function installNpm(string $version, ?OutputInterface $output): void
     {
-        $command = PackageManager::NPM->installPackageManagerCommand($version);
-        $this->shellRunner->run($command, $output);
+        PackageManager::NPM->installPackageManagerCommand($version);
     }
 
     protected function installDocker(string $version, ?OutputInterface $output): void
     {
-        $command = OSCommand::INSTALL_DOCKER->execute();
-        $this->shellRunner->run($command, $output);
+        OSCommand::INSTALL_DOCKER->call();
     }
 
     protected function installHerd(string $version, ?OutputInterface $output): void
     {
-        $command = OSCommand::INSTALL_HERD->execute();
-        $this->shellRunner->run($command, $output);
+        OSCommand::INSTALL_HERD->call();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Igne\LaravelBootstrap\Enums;
 
+use Igne\LaravelBootstrap\Builders\OSCommandBuilder;
 use Illuminate\Support\Facades\File;
 
 enum OSCommand: string
@@ -47,9 +48,19 @@ enum OSCommand: string
         return (new OSCommandBuilder($this))->forUrl($url);
     }
 
-    public function execute(): string
+    public function call(): int
     {
-        return (new OSCommandBuilder($this))->execute();
+        return (new OSCommandBuilder($this))->call();
+    }
+
+    public function callSilent(): int
+    {
+        return (new OSCommandBuilder($this))->callSilent();
+    }
+
+    public function silent(): OSCommandBuilder
+    {
+        return (new OSCommandBuilder($this))->silent();
     }
 
     public function builder(): OSCommandBuilder

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Data\DTOs;
 
-use Igne\LaravelBootstrap\Enums\CommandEnvironmentOption;
+use Igne\LaravelBootstrap\Enums\CLIToolOption;
 use Igne\LaravelBootstrap\Traits\BuildsCommandOptions;
 use InvalidArgumentException;
 
@@ -13,7 +13,7 @@ final readonly class BootstrapCommand
     use BuildsCommandOptions;
 
     public function __construct(
-        public CommandEnvironmentOption $environment,
+        public CLIToolOption $environment,
         public string $command,
         public ?string $message,
         public array $args = [],
@@ -23,17 +23,17 @@ final readonly class BootstrapCommand
 
     public static function artisan(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironmentOption::ARTISAN, $command, $message, $args);
+        return new self(CLIToolOption::ARTISAN, $command, $message, $args);
     }
 
     public static function composer(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironmentOption::COMPOSER, $command, $message, $args);
+        return new self(CLIToolOption::COMPOSER, $command, $message, $args);
     }
 
     public static function packageManager(string $command, ?string $message = null, array $args = []): self
     {
-        return new self(CommandEnvironmentOption::PACKAGE_MANAGER, $command, $message, $args);
+        return new self(CLIToolOption::PACKAGE_MANAGER, $command, $message, $args);
     }
 
     private function validate(): void

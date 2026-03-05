@@ -23,9 +23,11 @@ final class TerminalCommandResolver
             }
         }
 
-        return OSCommand::OPEN_TERMINAL
+        OSCommand::OPEN_TERMINAL
             ->withCommand($command)
-            ->execute();
+            ->call();
+
+        return null;
     }
 
     public function canOpenTerminal(): bool

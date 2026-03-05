@@ -7,7 +7,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Development\ToolInstaller;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Igne\LaravelBootstrap\Verifiers\VersionChecker;
 use Illuminate\Support\Collection;
 
@@ -112,7 +112,7 @@ final readonly class ValidateTools
 
     private function throwMissingToolException(string $tool): void
     {
-        throw new DependencyCheckException("{$tool} not found. Please install it manually.");
+        throw new DependencyValidationException("{$tool} not found. Please install it manually.");
     }
 
     private function installMissingTool(string $tool, InterruptibleCommand $command): void
@@ -235,7 +235,7 @@ final readonly class ValidateTools
         string $currentVersion,
         string $requiredVersion
     ): void {
-        throw new DependencyCheckException("{$tool} {$currentVersion} too old. Required: >= {$requiredVersion}");
+        throw new DependencyValidationException("{$tool} {$currentVersion} too old. Required: >= {$requiredVersion}");
     }
 
     private function getToolVersion(string $tool, InterruptibleCommand $command): string

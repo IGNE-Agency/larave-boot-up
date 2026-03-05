@@ -2,16 +2,16 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands;
 
+use Igne\LaravelBootstrap\Bootstrap\ApplicationServeBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Contracts\Server;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Factories\ServerFactory;
 use Igne\LaravelBootstrap\Handlers\ErrorHandler;
 use Igne\LaravelBootstrap\Resolvers\ServerResolver;
-use Igne\LaravelBootstrap\ServeApplication;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class AppBootstrap extends InterruptibleCommand implements Isolatable
+final class ServeApplicationCommand extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'app:serve {server? : The development server to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
@@ -22,6 +22,11 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
     protected $description = 'Bootstrap the application server and serve locally';
 
     protected Server $server;
+
+    public function __construct(protected ApplicationServeBootstrap $bootstrapper)
+    {
+        parent::__construct();
+    }
 
     public function handleWithInterrupts(): int
     {
@@ -67,10 +72,8 @@ final class AppBootstrap extends InterruptibleCommand implements Isolatable
 
     private function bootApplication(): bool
     {
-        $bootstrapper = new ServeApplication($this->server);
-
         try {
-            $bootstrapper->boot();
+            $this->bootstrapper->register($this->server)->boot();
 
             return true;
         } catch (\Throwable $e) {

@@ -41,9 +41,9 @@ final class HerdServer extends DevServer
     public function isRunning(): bool
     {
         $herd = DevServerOption::HERD->command();
-        $checkCommand = OSCommand::CHECK_PROCESS->forProcess($herd)->execute();
+        $exitCode = OSCommand::CHECK_PROCESS->forProcess($herd)->call();
 
-        return $this->command->isCommandRunning($checkCommand);
+        return $exitCode === 0;
     }
 
     public function cleanup(): void

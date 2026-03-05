@@ -23,13 +23,9 @@ trait OpensTerminalCommands
             }
         }
 
-        $terminalCommand = OSCommand::OPEN_TERMINAL
+        OSCommand::OPEN_TERMINAL
             ->withCommand($command)
-            ->execute();
-
-        if ($terminalCommand) {
-            shell_exec("{$terminalCommand} > /dev/null 2>&1 &");
-        }
+            ->call();
     }
 
     protected function canOpenTerminal(): bool

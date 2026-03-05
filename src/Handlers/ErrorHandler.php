@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Handlers;
 
-use Igne\LaravelBootstrap\Exceptions\AppDeploymentException;
-use Igne\LaravelBootstrap\Exceptions\DatabaseCheckException;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\ApplicationDeploymentException;
+use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Igne\LaravelBootstrap\Exceptions\ServeException;
 use Illuminate\Console\OutputStyle;
 
@@ -27,9 +27,9 @@ final class ErrorHandler
     private function getErrorMessage(\Throwable $exception, string $serverName): string
     {
         return match (get_class($exception)) {
-            DependencyCheckException::class => 'Failed on the dependencies',
-            DatabaseCheckException::class => 'Failed on the database',
-            AppDeploymentException::class => 'Failed to deploy Laravel application',
+            DependencyValidationException::class => 'Failed on the dependencies',
+            DatabaseValidationException::class => 'Failed on the database',
+            ApplicationDeploymentException::class => 'Failed to deploy Laravel application',
             ServeException::class => "Failed to start the server {$serverName}",
             default => 'An unexpected error occurred',
         };

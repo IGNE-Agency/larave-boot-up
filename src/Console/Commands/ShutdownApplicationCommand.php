@@ -11,7 +11,7 @@ use Igne\LaravelBootstrap\Terminators\BackgroundProcessTerminator;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class AppDown extends InterruptibleCommand implements Isolatable
+final class ShutdownApplicationCommand extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'app:down';
 

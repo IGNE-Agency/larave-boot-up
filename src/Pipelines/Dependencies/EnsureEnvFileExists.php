@@ -6,7 +6,7 @@ namespace Igne\LaravelBootstrap\Pipelines\Dependencies;
 
 use Closure;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Illuminate\Support\Facades\File;
 
 final readonly class EnsureEnvFileExists
@@ -22,7 +22,7 @@ final readonly class EnsureEnvFileExists
         } elseif (File::exists($env)) {
             $command->info('.env already exists, skipping.');
         } else {
-            throw new DependencyCheckException('No .env or .env.example found. Please create one.');
+            throw new DependencyValidationException('No .env or .env.example found. Please create one.');
         }
 
         return $next($command);

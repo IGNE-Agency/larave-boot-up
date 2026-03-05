@@ -2,22 +2,23 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
+use Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class DependencyCheckCommand extends InterruptibleCommand implements Isolatable
+final class ValidateDependenciesCommand extends InterruptibleCommand implements Isolatable
 {
     protected $signature = 'check:dependencies {server : The development environment to use (herd, sail, laravel)}';
 
     protected $description = 'Make sure the dependencies is correct for development';
 
-    /**
-     * Indicates whether the command should be hidden from the Artisan command list.
-     *
-     * @var bool
-     */
     protected $hidden = true;
+
+    public function __construct(protected DependencyValidationBootstrap $bootstrapper)
+    {
+        parent::__construct();
+    }
 
     public function handleWithInterrupts(): int
     {
@@ -28,21 +29,10 @@ final class DependencyCheckCommand extends InterruptibleCommand implements Isola
         $this->newLine();
 
         try {
-            app(\Illuminate\Pipeline\Pipeline::class)
-                ->send($this)
-                ->through([
-                    \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateServerServices::class,
-                    \Igne\LaravelBootstrap\Pipelines\Dependencies\EnsureEnvFileExists::class,
-                    \Igne\LaravelBootstrap\Pipelines\Dependencies\GenerateAppKey::class,
-                    \Igne\LaravelBootstrap\Pipelines\Dependencies\ValidateTools::class,
-                ])
-                ->then(function (InterruptibleCommand $command) {
-                    $this->info('✅ All dependencies are correct.');
-
-                    return $command;
-                });
+            $this->bootstrapper->register($this)->boot();
+            $this->info('✅ All dependencies are correct.');
         } catch (\Throwable $e) {
-            throw new DependencyCheckException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
+            throw new DependencyValidationException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
         }
 
         return self::SUCCESS;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Verifiers;
 
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Igne\LaravelBootstrap\Traits\HasOutputMethods;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\File;
@@ -47,6 +47,6 @@ final class ComposerJsonPresenceVerifier
 
     private function throwException(): void
     {
-        throw new DependencyCheckException('composer.json file is required but not found in project root.');
+        throw new DependencyValidationException('composer.json file is required but not found in project root.');
     }
 }

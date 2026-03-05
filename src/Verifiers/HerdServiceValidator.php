@@ -7,7 +7,7 @@ namespace Igne\LaravelBootstrap\Verifiers;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Enums\OSCommand;
-use Igne\LaravelBootstrap\Exceptions\DependencyCheckException;
+use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 
 final readonly class HerdServiceValidator
 {
@@ -38,11 +38,11 @@ final readonly class HerdServiceValidator
             return false;
         }
 
-        $checkCommand = OSCommand::CHECK_PROCESS->forProcess('nginx')->execute();
-        $nginxRunning = $command->externalProcessManager->isCommandRunning($checkCommand);
+        $nginxExitCode = OSCommand::CHECK_PROCESS->forProcess('nginx')->call();
+        $nginxRunning = $nginxExitCode === 0;
 
-        $checkPhpFpm = OSCommand::CHECK_PROCESS->forProcess('php-fpm')->execute();
-        $phpFpmRunning = $command->externalProcessManager->isCommandRunning($checkPhpFpm);
+        $phpFpmExitCode = OSCommand::CHECK_PROCESS->forProcess('php-fpm')->call();
+        $phpFpmRunning = $phpFpmExitCode === 0;
 
         return $nginxRunning || $phpFpmRunning;
     }
@@ -60,8 +60,8 @@ final readonly class HerdServiceValidator
 
     private function forceStopService(string $service, InterruptibleCommand $command): void
     {
-        $checkCommand = OSCommand::CHECK_PROCESS->forProcess($service)->execute();
-        if ($command->externalProcessManager->isCommandRunning($checkCommand)) {
+        $exitCode = OSCommand::CHECK_PROCESS->forProcess($service)->call();
+        if ($exitCode === 0) {
             $command->externalProcessManager->callSilent("sudo brew services stop {$service}");
         }
     }
@@ -81,7 +81,7 @@ final readonly class HerdServiceValidator
             $this->restartHerdServices($command);
 
             if (! $this->areAllHerdServicesRunning($command)) {
-                throw new DependencyCheckException(
+                throw new DependencyValidationException(
                     'Failed to start Herd services correctly. Please run "herd restart" manually and try again.'
                 );
             }
@@ -95,8 +95,8 @@ final readonly class HerdServiceValidator
         $requiredProcesses = ['nginx', 'php-fpm', 'dnsmasq'];
 
         foreach ($requiredProcesses as $process) {
-            $checkCommand = OSCommand::CHECK_PROCESS->forProcess($process)->execute();
-            if (! $command->externalProcessManager->isCommandRunning($checkCommand)) {
+            $exitCode = OSCommand::CHECK_PROCESS->forProcess($process)->call();
+            if ($exitCode !== 0) {
                 return false;
             }
         }
