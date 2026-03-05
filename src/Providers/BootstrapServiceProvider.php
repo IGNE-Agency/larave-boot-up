@@ -13,25 +13,10 @@ final class BootstrapServiceProvider extends ServiceProvider
             'bootstrap'
         );
 
-        $this->app->singleton(
-            \Igne\LaravelBootstrap\Bootstrap\ApplicationServeBootstrap::class,
-            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\ApplicationServeBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
-        );
-
-        $this->app->singleton(
-            \Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap::class,
-            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
-        );
-
-        $this->app->singleton(
-            \Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap::class,
-            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
-        );
-
-        $this->app->singleton(
-            \Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap::class,
-            fn ($app) => new \Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap($app->make(\Illuminate\Pipeline\Pipeline::class))
-        );
+        $this->app->register(ApplicationServeServiceProvider::class);
+        $this->app->register(ApplicationDeploymentServiceProvider::class);
+        $this->app->register(DatabaseSetupServiceProvider::class);
+        $this->app->register(DependencyValidationServiceProvider::class);
     }
 
     public function boot(): void

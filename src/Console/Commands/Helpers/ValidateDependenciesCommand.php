@@ -2,8 +2,8 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
-use Igne\LaravelBootstrap\Bootstrap\DependencyValidationBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Enums\ProviderOption;
 use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
 use Illuminate\Contracts\Console\Isolatable;
 
@@ -15,11 +15,6 @@ final class ValidateDependenciesCommand extends InterruptibleCommand implements 
 
     protected $hidden = true;
 
-    public function __construct(protected DependencyValidationBootstrap $bootstrapper)
-    {
-        parent::__construct();
-    }
-
     public function handleWithInterrupts(): int
     {
         $this->newLine();
@@ -29,7 +24,8 @@ final class ValidateDependenciesCommand extends InterruptibleCommand implements 
         $this->newLine();
 
         try {
-            $this->bootstrapper->register($this)->boot();
+            $bootstrap = $this->laravel->make(ProviderOption::DEPENDENCIES->value);
+            $bootstrap($this);
             $this->info('✅ All dependencies are correct.');
         } catch (\Throwable $e) {
             throw new DependencyValidationException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);

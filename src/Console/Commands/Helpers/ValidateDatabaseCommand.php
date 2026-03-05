@@ -2,8 +2,8 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
-use Igne\LaravelBootstrap\Bootstrap\DatabaseSetupBootstrap;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Enums\ProviderOption;
 use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
 use Illuminate\Contracts\Console\Isolatable;
 
@@ -15,11 +15,6 @@ final class ValidateDatabaseCommand extends InterruptibleCommand implements Isol
 
     protected $hidden = true;
 
-    public function __construct(protected DatabaseSetupBootstrap $bootstrapper)
-    {
-        parent::__construct();
-    }
-
     public function handleWithInterrupts(): int
     {
         $this->newLine();
@@ -29,7 +24,8 @@ final class ValidateDatabaseCommand extends InterruptibleCommand implements Isol
         $this->newLine();
 
         try {
-            $this->bootstrapper->register($this)->boot();
+            $bootstrap = $this->laravel->make(ProviderOption::DATABASE->value);
+            $bootstrap($this);
             $this->info('✅ Database setup is correct.');
         } catch (\Throwable $e) {
             throw new DatabaseValidationException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);

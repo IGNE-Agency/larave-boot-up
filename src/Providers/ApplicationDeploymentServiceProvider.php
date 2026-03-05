@@ -1,11 +1,25 @@
 <?php
 
-namespace Igne\LaravelBootstrap\Bootstrap;
+namespace Igne\LaravelBootstrap\Providers;
 
-use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Contracts\HasRuntimeFinalization;
+use Igne\LaravelBootstrap\Enums\ProviderOption;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\ServiceProvider;
 
-final class ApplicationDeploymentBootstrap extends PipelineBootstrap
+final class ApplicationDeploymentServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->singleton(
+            ProviderOption::APP_DEPLOY->value,
+            fn ($app) => fn (mixed $context) => $app->make(Pipeline::class)
+                ->send($context)
+                ->through($this->pipes())
+                ->then($this->afterBoot(...))
+        );
+    }
+
     protected function pipes(): array
     {
         return [
@@ -21,7 +35,7 @@ final class ApplicationDeploymentBootstrap extends PipelineBootstrap
 
     protected function afterBoot(mixed $passable): mixed
     {
-        if ($passable instanceof InterruptibleCommand) {
+        if ($passable instanceof HasRuntimeFinalization) {
             $passable->finalizeRuntime();
         }
 

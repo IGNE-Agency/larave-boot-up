@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Igne\LaravelBootstrap\Handlers;
 
+use Igne\LaravelBootstrap\Enums\DevServerOption;
 use Igne\LaravelBootstrap\Exceptions\ApplicationDeploymentException;
 use Igne\LaravelBootstrap\Exceptions\DatabaseValidationException;
 use Igne\LaravelBootstrap\Exceptions\DependencyValidationException;
@@ -16,21 +17,21 @@ final class ErrorHandler
         private readonly OutputStyle $output
     ) {}
 
-    public function handleBootstrapException(\Throwable $exception, string $serverName): void
+    public function handleBootstrapException(\Throwable $exception, DevServerOption $serverOption): void
     {
         $this->output->error($exception->getMessage());
 
-        $message = $this->getErrorMessage($exception, $serverName);
+        $message = $this->getErrorMessage($exception, $serverOption);
         $this->output->error($message);
     }
 
-    private function getErrorMessage(\Throwable $exception, string $serverName): string
+    private function getErrorMessage(\Throwable $exception, DevServerOption $serverOption): string
     {
-        return match (get_class($exception)) {
+        return match (\get_class($exception)) {
             DependencyValidationException::class => 'Failed on the dependencies',
             DatabaseValidationException::class => 'Failed on the database',
             ApplicationDeploymentException::class => 'Failed to deploy Laravel application',
-            ServeException::class => "Failed to start the server {$serverName}",
+            ServeException::class => "Failed to start the server {$serverOption->value}",
             default => 'An unexpected error occurred',
         };
     }

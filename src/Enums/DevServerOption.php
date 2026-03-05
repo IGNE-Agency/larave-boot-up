@@ -2,6 +2,8 @@
 
 namespace Igne\LaravelBootstrap\Enums;
 
+use Illuminate\Console\Command;
+
 enum DevServerOption: string
 {
     case HERD = 'herd';
@@ -33,6 +35,19 @@ enum DevServerOption: string
             self::HERD => 'herd',
             self::SAIL => './vendor/bin/sail',
             default => ''
+        };
+    }
+
+    public function tips(Command $command): void
+    {
+        match ($this) {
+            self::SAIL => (function () use ($command) {
+                $command->info('Tip: Add an alias to your shell:');
+                $command->line("   `alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'`");
+                $command->line('   Then run `source ~/.zshrc` (or equivalent for your shell)');
+                $command->info('Run commands with Sail like: `sail artisan migrate`');
+            })(),
+            default => null
         };
     }
 }

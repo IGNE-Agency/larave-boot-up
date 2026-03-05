@@ -2,14 +2,15 @@
 
 namespace Igne\LaravelBootstrap\Console\Commands\Helpers;
 
-use Igne\LaravelBootstrap\Bootstrap\ApplicationDeploymentBootstrap;
 use Igne\LaravelBootstrap\Console\ExternalCommandManager;
 use Igne\LaravelBootstrap\Console\InterruptibleCommand;
+use Igne\LaravelBootstrap\Contracts\HasRuntimeFinalization;
 use Igne\LaravelBootstrap\Enums\DevServerOption;
+use Igne\LaravelBootstrap\Enums\ProviderOption;
 use Igne\LaravelBootstrap\Exceptions\ApplicationDeploymentException;
 use Illuminate\Contracts\Console\Isolatable;
 
-final class DeployCommand extends InterruptibleCommand implements Isolatable
+final class DeployCommand extends InterruptibleCommand implements HasRuntimeFinalization, Isolatable
 {
     protected $signature = 'app:deploy {server : The development server to use (herd, sail, laravel)}
         {--s|seed : Seed the database}
@@ -21,11 +22,6 @@ final class DeployCommand extends InterruptibleCommand implements Isolatable
     protected $hidden = true;
 
     public ExternalCommandManager $externalProcessManager;
-
-    public function __construct(protected ApplicationDeploymentBootstrap $bootstrapper)
-    {
-        parent::__construct();
-    }
 
     public function handleWithInterrupts(): int
     {
@@ -42,7 +38,8 @@ final class DeployCommand extends InterruptibleCommand implements Isolatable
         $this->newLine();
 
         try {
-            $this->bootstrapper->register($this)->boot();
+            $bootstrap = $this->laravel->make(ProviderOption::APP_DEPLOY->value);
+            $bootstrap($this);
             $this->info('✅ Laravel booted successfully.');
         } catch (\Throwable $e) {
             throw new ApplicationDeploymentException($e->getMessage(), \is_int($e->getCode()) ? $e->getCode() : 0, $e);
